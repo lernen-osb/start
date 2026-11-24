@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathe im Advent</title>
+<style>
+  :root{
+    --night:#0f1b33; --night2:#1a2b4d; --gold:#e8b94a; --gold2:#f6d98b;
+    --red:#b8323a; --red2:#d4474f; --green:#1f5d4a; --paper:#fbf6ea; --ink:#2a2420;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color:#f4efe3;
+    background: radial-gradient(ellipse at 50% -10%, #2d4677 0%, var(--night2) 35%, var(--night) 75%) fixed;
+    overflow-x:hidden;
+  }
+  #snow{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:2.2rem 1.2rem 3rem}
+  header{text-align:center;margin-bottom:1.6rem}
+  h1{
+    font-family: Georgia,"Times New Roman",serif; font-weight:normal;
+    font-size:clamp(2.4rem,6vw,4.2rem); margin:0; letter-spacing:.02em;
+    color:var(--gold2); text-shadow:0 0 24px rgba(232,185,74,.35);
+  }
+  h1 em{font-style:italic;color:#fff}
+  .sub{margin:.5rem 0 0;color:#c9d3e6;font-size:1.05rem}
+  .status{
+    display:inline-block;margin-top:1rem;padding:.5rem 1rem;border-radius:999px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);font-size:.95rem;
+  }
+  .preview{background:rgba(184,50,58,.35);border-color:var(--red2)}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  @media (max-width:860px){.grid{grid-template-columns:repeat(4,1fr)}}
+  @media (max-width:520px){.grid{grid-template-columns:repeat(3,1fr);gap:10px}}
+  .door{
+    position:relative;aspect-ratio:1/1.1;border:none;border-radius:12px;cursor:pointer;
+    font-family:Georgia,serif;color:var(--paper);padding:0;
+    background:linear-gradient(155deg,var(--red2),var(--red) 60%,#8e2229);
+    box-shadow:inset 0 0 0 2px rgba(246,217,139,.35), 0 6px 16px rgba(0,0,0,.35);
+    transition:transform .2s, box-shadow .2s, filter .2s;
+  }
+  .door:nth-child(3n+2){background:linear-gradient(155deg,#2b7a61,var(--green) 60%,#15453a)}
+  .door:nth-child(5n+4){background:linear-gradient(155deg,#2e4a82,#1f3563 60%,#16274a)}
+  .door .num{font-size:clamp(1.8rem,4.5vw,2.8rem);line-height:1}
+  .door .tag{display:block;font-family:system-ui,sans-serif;font-size:.72rem;margin-top:.35rem;opacity:.85;letter-spacing:.04em}
+  .door::before{ /* ribbon */
+    content:"";position:absolute;inset:auto 0 18% 0;height:5px;background:rgba(246,217,139,.35)
+  }
+  .door.ready{animation:glow 2.4s ease-in-out infinite}
+  .door.ready:hover{transform:translateY(-3px) rotate(-1deg)}
+  @keyframes glow{50%{box-shadow:inset 0 0 0 2px var(--gold2),0 0 22px rgba(246,217,139,.55)}}
+  .door.locked{filter:grayscale(.55) brightness(.6);cursor:not-allowed}
+  .door.locked .tag::before{content:"🔒 "}
+  .door.done{background:var(--paper)!important;color:var(--ink);box-shadow:inset 0 0 0 2px var(--gold),0 6px 16px rgba(0,0,0,.3)}
+  .door.done::before{background:rgba(232,185,74,.5)}
+  .door.done .tag::before{content:"✓ "}
+  .door:focus-visible{outline:3px solid var(--gold2);outline-offset:3px}
+
+  .note{max-width:760px;margin:1.8rem auto 0;text-align:center;color:#c9d3e6;font-size:.95rem;line-height:1.5}
+
+  /* Modal */
+  .backdrop{position:fixed;inset:0;background:rgba(6,12,26,.72);display:none;align-items:center;justify-content:center;z-index:10;padding:1rem}
+  .backdrop.show{display:flex}
+  .card{
+    background:var(--paper);color:var(--ink);max-width:680px;width:100%;max-height:92vh;overflow:auto;
+    border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;
+    animation:pop .35s cubic-bezier(.2,1.3,.4,1);
+  }
+  @keyframes pop{from{transform:scale(.85) rotateX(25deg);opacity:0}}
+  .card-head{background:linear-gradient(120deg,var(--red),#8e2229);color:var(--paper);padding:1.1rem 1.4rem;border-radius:16px 16px 0 0}
+  .card-head .day{font-family:Georgia,serif;font-size:1.7rem}
+  .card-head .meta{font-size:.92rem;opacity:.92;margin-top:.15rem}
+  .stars{color:var(--gold2);letter-spacing:.1em}
+  .card-body{padding:1.2rem 1.5rem .4rem;font-size:1.12rem;line-height:1.6}
+  .card-body ol,.card-body ul{padding-left:1.4rem}
+  .card-body li{margin:.25rem 0}
+  table.magic{border-collapse:collapse;margin:.8rem auto}
+  table.magic td{width:58px;height:58px;border:2px solid var(--ink);text-align:center;font-size:1.5rem;font-family:Georgia,serif;background:#fff}
+  .task-note{
+    margin:.6rem 1.5rem 1.4rem;padding:.8rem 1rem;border-radius:10px;
+    background:#efe6cf;border-left:5px solid var(--gold);font-size:.98rem;line-height:1.45
+  }
+  .close{position:absolute;top:.7rem;right:.8rem;background:rgba(255,255,255,.18);border:none;color:#fff;
+    width:2.3rem;height:2.3rem;border-radius:50%;font-size:1.3rem;cursor:pointer}
+  .close:hover{background:rgba(255,255,255,.32)}
+  .locked-msg{padding:2rem 1.5rem;text-align:center;font-size:1.15rem}
+  .locked-msg .big{font-size:3rem}
+  @media (prefers-reduced-motion:reduce){.door.ready{animation:none}.card{animation:none}}
+  @media print{#snow,.grid,.note,header,.close{display:none}.backdrop{position:static;display:block;background:none}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<div class="wrap">
+  <header>
+    <h1>Mathe <em>im</em> Advent</h1>
+    <p class="sub">Jeden Tag ein Türchen – jeden Tag eine Aufgabe</p>
+    <div class="status" id="status">Kalender wird geladen …</div>
+  </header>
+
+  <main class="grid" id="grid" aria-label="Adventskalender"></main>
+
+  <p class="note">
+    ★ einfach &nbsp;·&nbsp; ★★ mittel &nbsp;·&nbsp; ★★★ Knobelei<br>
+    Schreibe zu jedem Türchen <b>den Tag</b>, <b>deinen Rechenweg</b> und <b>einen Antwortsatz</b> auf dein Blatt.
+    Verpasste Türchen kannst du jederzeit nachholen. Am Ende gibst du dein Blatt ab.
+  </p>
+</div>
+
+<div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="cardDay">
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+(function(){
+  const YEAR = 2026;
+  const DATA = "W3siZGF5IjogMSwgInRoZW1hIjogIlNjaHJpZnRsaWNoZSBBZGRpdGlvbiIsICJzdHVmZSI6IDEsICJ0ZXh0IjogIjxwPkluIGRlciBXaWNodGVsd2Vya3N0YXR0IHdlcmRlbiBHZXNjaGVua2UgZ2V6w6RobHQuIEhhbGxlIEEgbWVsZGV0IDxiPjQmIzgyMzk7ODU3PC9iPiBHZXNjaGVua2UsIEhhbGxlIEIgPGI+MTImIzgyMzk7Mzk2PC9iPiB1bmQgSGFsbGUgQyA8Yj43Mzg8L2I+LjwvcD48cD5XaWUgdmllbGUgR2VzY2hlbmtlIHNpbmQgZXMgaW5zZ2VzYW10PyBSZWNobmUgc2NocmlmdGxpY2guPC9wPiJ9LCB7ImRheSI6IDIsICJ0aGVtYSI6ICJaaWZmZXJua2FydGVuIiwgInN0dWZlIjogMiwgInRleHQiOiAiPHA+V2ljaHRlbCBQYXVsIGhhdCBmw7xuZiBaaWZmZXJua2FydGVuOiA8Yj43ICZuYnNwOyAwICZuYnNwOyA0ICZuYnNwOyA5ICZuYnNwOyAyPC9iPjwvcD48b2w+PGxpPkxlZ2UgZGllIDxiPmdyw7bDn3RlPC9iPiBmw7xuZnN0ZWxsaWdlIFphaGwsIGRpZSBtYW4gbWl0IGFsbGVuIEthcnRlbiBsZWdlbiBrYW5uLjwvbGk+PGxpPkxlZ2UgZGllIDxiPmtsZWluc3RlPC9iPiBmw7xuZnN0ZWxsaWdlIFphaGwuIEFjaHR1bmc6IEVpbmUgWmFobCBkYXJmIG5pY2h0IG1pdCAwIGJlZ2lubmVuITwvbGk+PGxpPkJlcmVjaG5lIGRlbiBVbnRlcnNjaGllZCBkZXIgYmVpZGVuIFphaGxlbiBzY2hyaWZ0bGljaC48L2xpPjwvb2w+In0sIHsiZGF5IjogMywgInRoZW1hIjogIlNjaHJpZnRsaWNoZSBEaXZpc2lvbiIsICJzdHVmZSI6IDEsICJ0ZXh0IjogIjxwPkRpZSBXZWlobmFjaHRzYsOkY2tlcmVpIGhhdCA8Yj43JiM4MjM5OzM0NDwvYj4gUGzDpHR6Y2hlbiBnZWJhY2tlbi4gSW4gamVkZSBEb3NlIGtvbW1lbiBnZW5hdSA8Yj44PC9iPiBQbMOkdHpjaGVuLjwvcD48cD5XaWUgdmllbGUgRG9zZW4gd2VyZGVuIHZvbGw/IFJlY2huZSBzY2hyaWZ0bGljaCB1bmQgbWFjaGUgZGllIFByb2JlLjwvcD4ifSwgeyJkYXkiOiA0LCAidGhlbWEiOiAiUnVuZGVuIiwgInN0dWZlIjogMSwgInRleHQiOiAiPHA+SW0gbGV0enRlbiBKYWhyIGthbWVuIDxiPjI0OCYjODIzOTs1NjM8L2I+IEJlc3VjaGVyIGF1ZiBkZW4gV2VpaG5hY2h0c21hcmt0LjwvcD48cD5SdW5kZSBkaWVzZSBaYWhsIGF1ZjwvcD48b2w+PGxpPlplaG5lciw8L2xpPjxsaT5IdW5kZXJ0ZXIsPC9saT48bGk+VGF1c2VuZGVyLDwvbGk+PGxpPlplaG50YXVzZW5kZXIuPC9saT48L29sPiJ9LCB7ImRheSI6IDUsICJ0aGVtYSI6ICJaYWhsZW5yw6R0c2VsIiwgInN0dWZlIjogMiwgInRleHQiOiAiPHA+RGVyIFdlaWhuYWNodHNtYW5uIHNhZ3Q6IDxpPuKAnkljaCBkZW5rZSBtaXIgZWluZSBaYWhsLiBJY2ggbXVsdGlwbGl6aWVyZSBzaWUgbWl0IDQgdW5kIGFkZGllcmUgZGFubiAxOC4gSGVyYXVzIGtvbW10IDkwLuKAnDwvaT48L3A+PHA+V2VsY2hlIFphaGwgaGF0IGVyIHNpY2ggZ2VkYWNodD8gU2NocmVpYmUgYXVmLCB3aWUgZHUgcsO8Y2t3w6RydHMgZ2VyZWNobmV0IGhhc3QuPC9wPiJ9LCB7ImRheSI6IDYsICJ0aGVtYSI6ICJTY2hyaWZ0bGljaGUgTXVsdGlwbGlrYXRpb24iLCAic3R1ZmUiOiAxLCAidGV4dCI6ICI8cD5IZXV0ZSBpc3QgTmlrb2xhdXMhIERlciBOaWtvbGF1cyBiZXN1Y2h0IDxiPjM2PC9iPiBTY2h1bGVuIHVuZCBicmluZ3QgaW4gamVkZSBTY2h1bGUgPGI+MjQ3PC9iPiBTY2hva29sYWRlbi1OaWtvbMOkdXNlLjwvcD48cD5XaWUgdmllbGUgU2Nob2tvLU5pa29sw6R1c2UgYnJhdWNodCBlciBpbnNnZXNhbXQ/IFJlY2huZSBzY2hyaWZ0bGljaC48L3A+In0sIHsiZGF5IjogNywgInRoZW1hIjogIlJlY2hlbnJlZ2VsbiIsICJzdHVmZSI6IDIsICJ0ZXh0IjogIjxwPkJlcmVjaG5lIFNjaHJpdHQgZsO8ciBTY2hyaXR0LiBEZW5rZSBhbiBkaWUgUmVnZWxuOiA8Yj5LbGFtbWVyIHZvciBQdW5rdCB2b3IgU3RyaWNoPC9iPiE8L3A+PHAgc3R5bGU9J2ZvbnQtc2l6ZToxLjI1ZW07dGV4dC1hbGlnbjpjZW50ZXInPjxiPjEyMCDiiJIgNCDCtyAoMTgg4oiSIDMpICsgMzYgOiA2PC9iPjwvcD4ifSwgeyJkYXkiOiA4LCAidGhlbWEiOiAiTXVzdGVyIGVudGRlY2tlbiIsICJzdHVmZSI6IDMsICJ0ZXh0IjogIjxwPkVpbiBUYW5uZW5iYXVtIHdpcmQgYXVzIEt1Z2VsbiBnZWxlZ3QuIEluIGRlciBvYmVyc3RlbiBSZWloZSBsaWVndCA8Yj4xPC9iPiBLdWdlbCwgaW4gZGVyIHp3ZWl0ZW4gUmVpaGUgPGI+MzwvYj4gS3VnZWxuLCBpbiBkZXIgZHJpdHRlbiA8Yj41PC9iPiBLdWdlbG4g4oCTIGplZGUgUmVpaGUgaGF0IDIgS3VnZWxuIG1laHIgYWxzIGRpZSBSZWloZSBkYXLDvGJlci48L3A+PG9sPjxsaT5XaWUgdmllbGUgS3VnZWxuIGJyYXVjaHQgbWFuIGbDvHIgZWluZW4gQmF1bSBtaXQgPGI+NDwvYj4gUmVpaGVuPyBVbmQgbWl0IDxiPjU8L2I+IFJlaWhlbj88L2xpPjxsaT5XaWUgdmllbGUgS3VnZWxuIGJyYXVjaHQgbWFuIGbDvHIgPGI+MTA8L2I+IFJlaWhlbj88L2xpPjxsaT5XYXMgZsOkbGx0IGRpciBhbiBkZW4gRXJnZWJuaXNzZW4gYXVmPzwvbGk+PC9vbD4ifSwgeyJkYXkiOiA5LCAidGhlbWEiOiAiU2NocmlmdGxpY2hlIFN1YnRyYWt0aW9uIiwgInN0dWZlIjogMSwgInRleHQiOiAiPHA+UnVkb2xmIGRhcyBSZW50aWVyIHNvbGwgaW4gZGVyIFdlaWhuYWNodHNuYWNodCA8Yj4xMDAmIzgyMzk7MDAwPC9iPiBrbSBmbGllZ2VuLiBFciBoYXQgc2Nob24gPGI+MzcmIzgyMzk7NDY4PC9iPiBrbSB1bmQgZGFuYWNoIG5vY2ggZWlubWFsIDxiPjI1JiM4MjM5OzkwNzwvYj4ga20gZ2VzY2hhZmZ0LjwvcD48cD5XaWUgdmllbGUgS2lsb21ldGVyIG11c3MgZXIgbm9jaCBmbGllZ2VuPyBSZWNobmUgc2NocmlmdGxpY2guPC9wPiJ9LCB7ImRheSI6IDEwLCAidGhlbWEiOiAiRGl2aXNpb24gbWl0IFJlc3QiLCAic3R1ZmUiOiAyLCAidGV4dCI6ICI8cD5JbSBXaW50ZXJ3YWxkIGZpbmRldCBPbWEgPGI+MjUwPC9iPiBOw7xzc2UuIFNpZSB2ZXJ0ZWlsdCBzaWUgZ2VyZWNodCBhbiA8Yj43PC9iPiBFaWNoaMO2cm5jaGVuLiBKZWRlcyBFaWNoaMO2cm5jaGVuIHNvbGwgZ2xlaWNoIHZpZWxlIE7DvHNzZSBiZWtvbW1lbi48L3A+PG9sPjxsaT5XaWUgdmllbGUgTsO8c3NlIGJla29tbXQgamVkZXMgRWljaGjDtnJuY2hlbj88L2xpPjxsaT5XaWUgdmllbGUgTsO8c3NlIGJsZWliZW4gw7xicmlnPzwvbGk+PC9vbD4ifSwgeyJkYXkiOiAxMSwgInRoZW1hIjogIkdyb8OfZSBaYWhsZW4iLCAic3R1ZmUiOiAxLCAidGV4dCI6ICI8b2w+PGxpPlNjaHJlaWJlIGFscyBaYWhsIG1pdCBaaWZmZXJuOiA8Yj5kcmVpIE1pbGxpb25lbiB2aWVyaHVuZGVydHNlY2hzdGF1c2VuZHp3YW56aWc8L2I+PC9saT48bGk+U2NocmVpYmUgaW4gV29ydGVuOiA8Yj4xMiYjODIzOTswNDAmIzgyMzk7MzA1PC9iPjwvbGk+PC9vbD48cD5UaXBwOiBFaW5lIFN0ZWxsZW53ZXJ0dGFmZWwgaGlsZnQgZGlyLjwvcD4ifSwgeyJkYXkiOiAxMiwgInRoZW1hIjogIktvbWJpbmllcmVuIiwgInN0dWZlIjogMiwgInRleHQiOiAiPHA+RWxmZSBMaW5hIHBhY2t0IEdlc2NoZW5rZSBlaW4uIFNpZSBoYXQgPGI+MzwvYj4gU29ydGVuIEdlc2NoZW5rcGFwaWVyIChyb3QsIGdyw7xuLCBnb2xkKSwgPGI+NDwvYj4gRmFyYmVuIGbDvHIgU2NobGVpZmVuIHVuZCA8Yj4yPC9iPiBTb3J0ZW4gQW5ow6RuZ2VyIChTdGVybiB1bmQgVGFubmUpLjwvcD48cD5KZWRlcyBHZXNjaGVuayBiZWtvbW10IGVpbiBQYXBpZXIsIGVpbmUgU2NobGVpZmUgdW5kIGVpbmVuIEFuaMOkbmdlci4gV2llIHZpZWxlIHZlcnNjaGllZGVuZSBHZXNjaGVua2Uga2FubiBzaWUgZ2VzdGFsdGVuPyBaZWlnZSwgd2llIGR1IGdlesOkaGx0IGhhc3QgKHouJm5ic3A7Qi4gbWl0IGVpbmVtIEJhdW1kaWFncmFtbSkuPC9wPiJ9LCB7ImRheSI6IDEzLCAidGhlbWEiOiAiU2NocmlmdGxpY2hlIERpdmlzaW9uIiwgInN0dWZlIjogMSwgInRleHQiOiAiPHA+RsO8ciBkaWUgV2VpaG5hY2h0c2JlbGV1Y2h0dW5nIHdlcmRlbiA8Yj4xNSYjODIzOTs3MzI8L2I+IEzDpG1wY2hlbiBnbGVpY2htw6TDn2lnIGF1ZiA8Yj42PC9iPiBTdHJhw59lbiB2ZXJ0ZWlsdC48L3A+PHA+V2llIHZpZWxlIEzDpG1wY2hlbiBiZWtvbW10IGplZGUgU3RyYcOfZT8gUmVjaG5lIHNjaHJpZnRsaWNoIHVuZCBtYWNoZSBkaWUgUHJvYmUuPC9wPiJ9LCB7ImRheSI6IDE0LCAidGhlbWEiOiAiUG90ZW56ZW4iLCAic3R1ZmUiOiAyLCAidGV4dCI6ICI8cD5CZXJlY2huZTo8L3A+PG9sPjxsaT4yPHN1cD41PC9zdXA+PC9saT48bGk+MzxzdXA+NDwvc3VwPjwvbGk+PGxpPjEwPHN1cD42PC9zdXA+PC9saT48bGk+V2VsY2hlIGlzdCBncsO2w59lcjogMjxzdXA+Mzwvc3VwPiBvZGVyIDM8c3VwPjI8L3N1cD4/IEJlZ3LDvG5kZS48L2xpPjwvb2w+In0sIHsiZGF5IjogMTUsICJ0aGVtYSI6ICJHZXNjaGlja3QgcmVjaG5lbiIsICJzdHVmZSI6IDIsICJ0ZXh0IjogIjxwPlJlY2huZSBnZXNjaGlja3QgaW0gS29wZiEgU2NocmVpYmUgYXVmLCB3ZWxjaGVuIFRyaWNrIChWZXJ0YXVzY2hlbiwgWnVzYW1tZW5mYXNzZW4pIGR1IGJlbnV0enQgaGFzdC48L3A+PG9sPjxsaT4yNSDCtyAzNyDCtyA0PC9saT48bGk+MTk4ICsgNDY3ICsgMjwvbGk+PGxpPjQgwrcgMTkgwrcgMjU8L2xpPjwvb2w+In0sIHsiZGF5IjogMTYsICJ0aGVtYSI6ICJLbm9iZWxlaTogQWx0ZXIiLCAic3R1ZmUiOiAzLCAidGV4dCI6ICI8cD5PbWEgR2VyZGEgYmFja3QgbWl0IGlocmVyIEVua2VsaW4gTWlhIFBsw6R0emNoZW4uIE9tYSBpc3QgaGV1dGUgPGI+NC1tYWwgc28gYWx0PC9iPiB3aWUgTWlhLiBadXNhbW1lbiBzaW5kIGRpZSBiZWlkZW4gPGI+NzU8L2I+IEphaHJlIGFsdC48L3A+PHA+V2llIGFsdCBpc3QgTWlhLCB3aWUgYWx0IGlzdCBPbWE/IFNjaHJlaWJlIGF1Ziwgd2llIGR1IGVzIGhlcmF1c2dlZnVuZGVuIGhhc3QuPC9wPiJ9LCB7ImRheSI6IDE3LCAidGhlbWEiOiAiU2NocmlmdGxpY2hlIE11bHRpcGxpa2F0aW9uIiwgInN0dWZlIjogMiwgInRleHQiOiAiPHA+RWluZSBGYWJyaWsgc3RlbGx0IGplZGVuIFRhZyA8Yj4xJiM4MjM5OzI1ODwvYj4gQ2hyaXN0YmF1bWt1Z2VsbiBoZXIuPC9wPjxwPldpZSB2aWVsZSBLdWdlbG4gc2luZCBlcyBuYWNoIDxiPjQ3PC9iPiBUYWdlbj8gUmVjaG5lIHNjaHJpZnRsaWNoLjwvcD4ifSwgeyJkYXkiOiAxOCwgInRoZW1hIjogIlNhY2hhdWZnYWJlIiwgInN0dWZlIjogMiwgInRleHQiOiAiPHA+RGllIEtsYXNzZSA1IGhhdCBlaW5lbiBTdGFuZCBhdWYgZGVtIFNjaHVsLVdlaWhuYWNodHNtYXJrdC4gU2llIHZlcmthdWZ0IDxiPjEyODwvYj4gV2FmZmVsbiB6dSBqZSA8Yj4yJm5ic3A74oKsPC9iPiB1bmQgPGI+NzU8L2I+IEJlY2hlciBLaW5kZXJwdW5zY2ggenUgamUgPGI+MyZuYnNwO+KCrDwvYj4uIEbDvHIgWnV0YXRlbiB1bmQgQmVjaGVyIGhhdCBkaWUgS2xhc3NlIHZvcmhlciA8Yj4xOTAmbmJzcDvigqw8L2I+IGF1c2dlZ2ViZW4uPC9wPjxwPldpZSB2aWVsIEdlbGQgYmxlaWJ0IGbDvHIgZGllIEtsYXNzZW5rYXNzZSDDvGJyaWc/IFNjaHJlaWJlIGVpbmVuIEFudHdvcnRzYXR6LjwvcD4ifSwgeyJkYXkiOiAxOSwgInRoZW1hIjogIlppZmZlcm5yw6R0c2VsIiwgInN0dWZlIjogMywgInRleHQiOiAiPHA+R2VzdWNodCBpc3QgZWluZSA8Yj5kcmVpc3RlbGxpZ2UgWmFobDwvYj4uPC9wPjx1bD48bGk+SWhyZSBFaW5lcnppZmZlciBpc3QgPGI+MDwvYj4uPC9saT48bGk+RGllIEh1bmRlcnRlcnppZmZlciBpc3QgPGI+ZG9wcGVsdCBzbyBncm/DnzwvYj4gd2llIGRpZSBaZWhuZXJ6aWZmZXIuPC9saT48bGk+RGllIDxiPlF1ZXJzdW1tZTwvYj4gKGFsbGUgWmlmZmVybiBhZGRpZXJ0KSBpc3QgPGI+MTI8L2I+LjwvbGk+PC91bD48cD5XaWUgaGVpw590IGRpZSBaYWhsPyBCZWdyw7xuZGUsIHdhcnVtIGVzIG51ciBkaWVzZSBlaW5lIGdpYnQuPC9wPiJ9LCB7ImRheSI6IDIwLCAidGhlbWEiOiAiU2NocmlmdGxpY2hlIERpdmlzaW9uIiwgInN0dWZlIjogMSwgInRleHQiOiAiPHA+RGllIFdlaWhuYWNodHNwb3N0IGhhdCA8Yj45JiM4MjM5OzEzNTwvYj4gQnJpZWZlIGFuIGRlbiBXZWlobmFjaHRzbWFubi4gU2llIHdlcmRlbiBnbGVpY2htw6TDn2lnIGF1ZiA8Yj43PC9iPiBXaWNodGVsIHZlcnRlaWx0LCBkaWUgc2llIGJlYW50d29ydGVuLjwvcD48cD5XaWUgdmllbGUgQnJpZWZlIGJla29tbXQgamVkZXIgV2ljaHRlbD8gUmVjaG5lIHNjaHJpZnRsaWNoIHVuZCBtYWNoZSBkaWUgUHJvYmUuIEFjaHR1bmc6IFBhc3MgYmVpIGRlciBOdWxsIGd1dCBhdWYhPC9wPiJ9LCB7ImRheSI6IDIxLCAidGhlbWEiOiAiS25vYmVsZWk6IExpY2h0ZXJrZXR0ZSIsICJzdHVmZSI6IDMsICJ0ZXh0IjogIjxwPkFtIFphdW4gdm9yIGRlbSBIYXVzIHdpcmQgZWluZSBMaWNodGVya2V0dGUgYXVmZ2Vow6RuZ3QuIERlciBaYXVuIGlzdCA8Yj4yNCBtPC9iPiBsYW5nLiBBbSBBbmZhbmcsIGFtIEVuZGUgdW5kIGRhendpc2NoZW4gPGI+YWxsZSAzIG08L2I+IGjDpG5ndCBlaW4gbGV1Y2h0ZW5kZXIgU3Rlcm4uPC9wPjxwPldpZSB2aWVsZSBTdGVybmUgaMOkbmdlbiBhbSBaYXVuPyBGZXJ0aWdlIGVpbmUgU2tpenplIGFuITwvcD4ifSwgeyJkYXkiOiAyMiwgInRoZW1hIjogIlphaGxlbiBvcmRuZW4iLCAic3R1ZmUiOiAxLCAidGV4dCI6ICI8cD5Gw7xuZiBXaWNodGVsIGhhYmVuIFNjaG5lZWZsb2NrZW4gZ2V6w6RobHQ6PC9wPjxwIHN0eWxlPSd0ZXh0LWFsaWduOmNlbnRlcic+PGI+MSYjODIzOTswMTAmIzgyMzk7MTAxICZuYnNwO8K3Jm5ic3A7IDEmIzgyMzk7MTAwJiM4MjM5OzAwMCAmbmJzcDvCtyZuYnNwOyAxJiM4MjM5OzAwMSYjODIzOTsxMTAgJm5ic3A7wrcmbmJzcDsgMSYjODIzOTswMTEmIzgyMzk7MDAwICZuYnNwO8K3Jm5ic3A7IDk5OSYjODIzOTs5OTk8L2I+PC9wPjxwPk9yZG5lIGRpZSBaYWhsZW4gZGVyIEdyw7bDn2UgbmFjaC4gQmVnaW5uZSBtaXQgZGVyIGtsZWluc3RlbiB1bmQgYmVudXR6ZSBkYXMgWmVpY2hlbiAmbHQ7LjwvcD4ifSwgeyJkYXkiOiAyMywgInRoZW1hIjogIk1hZ2lzY2hlcyBRdWFkcmF0IiwgInN0dWZlIjogMywgInRleHQiOiAiPHA+SW4gZGllc2VtIG1hZ2lzY2hlbiBRdWFkcmF0IHN0ZWhlbiBkaWUgWmFobGVuIHZvbiA8Yj4xIGJpcyA5PC9iPiwgamVkZSBnZW5hdSBlaW5tYWwuIEluIGplZGVyIFplaWxlLCBqZWRlciBTcGFsdGUgdW5kIGluIGJlaWRlbiBEaWFnb25hbGVuIGVyZ2lidCBkaWUgU3VtbWUgaW1tZXIgPGI+MTU8L2I+LjwvcD48dGFibGUgY2xhc3M9J21hZ2ljJz48dHI+PHRkPjI8L3RkPjx0ZD48L3RkPjx0ZD42PC90ZD48L3RyPjx0cj48dGQ+PC90ZD48dGQ+NTwvdGQ+PHRkPjwvdGQ+PC90cj48dHI+PHRkPjwvdGQ+PHRkPjwvdGQ+PHRkPjg8L3RkPjwvdHI+PC90YWJsZT48cD7DnGJlcnRyYWdlIGRhcyBRdWFkcmF0IGF1ZiBkZWluIEJsYXR0IHVuZCBmw7xsbGUgZGllIGxlZXJlbiBGZWxkZXIgYXVzLjwvcD4ifSwgeyJkYXkiOiAyNCwgInRoZW1hIjogIlJlY2huZW4gd2llIEdhdcOfIiwgInN0dWZlIjogMywgInRleHQiOiAiPHA+RnJvaGUgV2VpaG5hY2h0ZW4hIFN0ZWxsIGRpciB2b3IsIGR1IGjDpHR0ZXN0IGFuIGplZGVtIEFkdmVudHN0YWcgc28gdmllbGUgU3Rlcm5lIGJla29tbWVuLCB3aWUgZGVyIFRhZyB6w6RobHQ6IGFtIDEuIERlemVtYmVyIDxiPjE8L2I+IFN0ZXJuLCBhbSAyLiBEZXplbWJlciA8Yj4yPC9iPiBTdGVybmUsIOKApiBhbSAyNC4gRGV6ZW1iZXIgPGI+MjQ8L2I+IFN0ZXJuZS48L3A+PHA+V2llIHZpZWxlIFN0ZXJuZSB3w6RyZW4gZGFzIGluc2dlc2FtdD88L3A+PHA+PGI+VGlwcDo8L2I+IERlciBiZXLDvGhtdGUgTWF0aGVtYXRpa2VyIENhcmwgRnJpZWRyaWNoIEdhdcOfIGhhdCBhbHMgU2Now7xsZXIgc28gZWluZSBBdWZnYWJlIGJsaXR6c2NobmVsbCBnZWzDtnN0LiBFciByZWNobmV0ZSBuaWNodCBhbGxlcyBuYWNoZWluYW5kZXIsIHNvbmRlcm4gYmlsZGV0ZSBQYWFyZTogMSArIDI0LCAyICsgMjMsIOKApiBXYXMgZsOkbGx0IGRpciBhdWY/PC9wPiJ9XQ==";
+  const HASH = 2914007040;
+  const ORDER = [7,15,1,20,11,4,23,9,18,2,13,6,24,17,10,3,21,14,8,19,5,12,22,16];
+  const KEY = "matheImAdvent" + YEAR;
+
+  const tasks = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(DATA), c => c.charCodeAt(0))));
+  const byDay = {}; tasks.forEach(t => byDay[t.day] = t);
+
+  function djb2(s){ let h = 5381; for (const c of s) h = (Math.imul(h,33) ^ c.charCodeAt(0)) >>> 0; return h; }
+  const param = new URLSearchParams(location.search).get("vorschau");
+  const preview = !!param && djb2(param) === HASH;
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ return []; } }
+  function save(list){ try{ localStorage.setItem(KEY, JSON.stringify(list)); }catch(e){} }
+  let opened = load();
+
+  function berlin(d){
+    const p = {};
+    new Intl.DateTimeFormat("de-DE",{timeZone:"Europe/Berlin",year:"numeric",month:"numeric",day:"numeric"})
+      .formatToParts(d).forEach(x => p[x.type] = +x.value);
+    return p;
+  }
+
+  // Datum vom Webserver (GitHub Pages) holen – Fallback: Uhr des Geräts
+  async function today(){
+    let d = new Date();
+    if (location.protocol.startsWith("http")) {
+      try{
+        const r = await fetch(location.href.split("#")[0], {method:"HEAD", cache:"no-store"});
+        const h = r.headers.get("Date");
+        if (h) { const s = new Date(h); if (!isNaN(s)) d = s; }
+      }catch(e){}
+    }
+    return berlin(d);
+  }
+
+  function openUntil(t){
+    if (preview) return 24;
+    if (t.year < YEAR || (t.year === YEAR && t.month < 12)) return 0;
+    if (t.year === YEAR && t.month === 12) return Math.min(t.day, 24);
+    return 24;
+  }
+
+  const grid = document.getElementById("grid");
+  const backdrop = document.getElementById("backdrop");
+  const card = document.getElementById("card");
+  let limit = 0, lastFocus = null;
+
+  function render(){
+    grid.innerHTML = "";
+    ORDER.forEach(n => {
+      const b = document.createElement("button");
+      const done = opened.includes(n);
+      const ok = n <= limit;
+      b.className = "door " + (!ok ? "locked" : done ? "done" : "ready");
+      b.innerHTML = `<span class="num">${n}</span><span class="tag">${!ok ? n + ". Dez." : done ? "geöffnet" : "öffnen"}</span>`;
+      b.setAttribute("aria-label", `Türchen ${n}` + (!ok ? ", noch verschlossen" : ""));
+      b.addEventListener("click", () => show(n, b));
+      grid.appendChild(b);
+    });
+  }
+
+  function show(n, btn){
+    lastFocus = btn;
+    if (n > limit) {
+      card.innerHTML = `<button class="close" aria-label="Schließen">×</button>
+        <div class="card-head"><div class="day" id="cardDay">Türchen ${n}</div></div>
+        <div class="locked-msg"><div class="big">🔒</div><p>Nicht schummeln! 😉<br>Dieses Türchen öffnet sich erst am <b>${n}. Dezember</b>.</p></div>`;
+    } else {
+      const t = byDay[n];
+      card.innerHTML = `<button class="close" aria-label="Schließen">×</button>
+        <div class="card-head"><div class="day" id="cardDay">${n}. Dezember</div>
+          <div class="meta">${t.thema} &nbsp;<span class="stars">${"★".repeat(t.stufe)}${"☆".repeat(3-t.stufe)}</span></div></div>
+        <div class="card-body">${t.text}</div>
+        <div class="task-note">✏️ <b>Auf dein Blatt:</b> „Tag ${n}“, deine Rechnung bzw. deinen Lösungsweg und einen Antwortsatz.</div>`;
+      if (!preview && !opened.includes(n)) { opened.push(n); save(opened); }
+    }
+    card.querySelector(".close").addEventListener("click", hide);
+    backdrop.classList.add("show");
+    card.querySelector(".close").focus();
+  }
+  function hide(){ backdrop.classList.remove("show"); render(); if (lastFocus) { const f = [...grid.children].find(x => x.querySelector(".num").textContent === lastFocus.querySelector(".num").textContent); f && f.focus(); } }
+  backdrop.addEventListener("click", e => { if (e.target === backdrop) hide(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && backdrop.classList.contains("show")) hide(); });
+
+  today().then(t => {
+    limit = openUntil(t);
+    const st = document.getElementById("status");
+    if (preview) { st.textContent = "Vorschau-Modus: alle Türchen offen"; st.classList.add("preview"); }
+    else if (limit === 0) {
+      const days = Math.round((Date.UTC(YEAR,11,1) - Date.UTC(t.year,t.month-1,t.day)) / 864e5);
+      st.textContent = days === 1 ? "Morgen geht’s los! 🎄" : `Noch ${days} Tage bis zum 1. Dezember 🎄`;
+    }
+    else if (limit < 24) st.textContent = `Heute ist der ${t.day}. Dezember – Türchen 1 bis ${limit} sind offen ⭐`;
+    else st.textContent = "Alle 24 Türchen sind offen – frohe Weihnachten! 🎁";
+    render();
+  });
+  render();
+
+  // Schneefall
+  const cv = document.getElementById("snow"), cx = cv.getContext("2d");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, flakes = [];
+  function size(){ W = cv.width = innerWidth; H = cv.height = innerHeight;
+    flakes = Array.from({length: Math.round(W*H/14000)}, () => ({x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.2+.6, s:Math.random()*.6+.25, w:Math.random()*Math.PI*2})); }
+  function tick(){
+    cx.clearRect(0,0,W,H); cx.fillStyle = "rgba(255,255,255,.8)";
+    for (const f of flakes){
+      if (!still){ f.y += f.s; f.w += .01; f.x += Math.sin(f.w)*.3; if (f.y > H+3){ f.y = -3; f.x = Math.random()*W; } }
+      cx.beginPath(); cx.arc(f.x,f.y,f.r,0,Math.PI*2); cx.fill();
+    }
+    if (!still) requestAnimationFrame(tick);
+  }
+  addEventListener("resize", () => { size(); if (still) tick(); });
+  size(); tick();
+})();
+</script>
+</body>
+</html>
