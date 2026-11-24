@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sissa und das Schachbrett – Potenzen entdecken</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#231d45;--bg:#fbf4e4;--card:#fff;--gold:#eeae22;--gold2:#ffd76a;--indigo:#2b2160;--red:#c8423b;--teal:#1f8a7d;--muted:#6b6385;--line:#e7dcc2;--green:#2e9e5b;--blue:#2f6fd6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:'Baloo 2',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:clamp(15px,1.3vw,28px);overflow:hidden;-webkit-user-select:none;user-select:none}
+header{height:8.5vh;min-height:54px;display:flex;align-items:center;gap:.5em;padding:0 1em;background:var(--indigo);color:#fff}
+header h1{font-size:1em;margin:0 .5em 0 0;white-space:nowrap;color:var(--gold2);font-weight:800}
+nav{display:flex;gap:.3em;flex:1;overflow-x:auto}
+nav button{font:inherit;font-size:.8em;font-weight:600;color:#d9d2ff;background:transparent;border:2px solid #4a3f8f;border-radius:2em;padding:.12em .75em;cursor:pointer;white-space:nowrap}
+nav button b{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:#4a3f8f;margin-right:.3em;font-size:.85em}
+nav button.active{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+nav button.active b{background:var(--ink);color:var(--gold2)}
+nav button.done b{background:var(--green);color:#fff}
+.hbtn{font:inherit;font-size:.8em;font-weight:700;background:#4a3f8f;color:#fff;border:none;border-radius:.6em;padding:.3em .7em;cursor:pointer;white-space:nowrap}
+.hbtn.off{opacity:.55}
+main{height:91.5vh;position:relative}
+.page{position:absolute;inset:0;padding:2vh 2.4vw;display:none;flex-direction:column;overflow:auto}
+.page.active{display:flex;animation:pageIn .45s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+h2{margin:0;font-size:1.8em;line-height:1.1}
+h3{margin:0 0 .45em;font-size:1.2em;line-height:1.2}
+.btn{font:inherit;font-weight:700;border:none;border-radius:.7em;padding:.35em 1.1em;background:var(--gold);color:var(--ink);cursor:pointer;box-shadow:0 .2em 0 #b07c10;font-size:1em;min-height:2.5em;touch-action:manipulation}
+.btn:active{transform:translateY(.15em);box-shadow:0 .05em 0 #b07c10}
+.btn.sec{background:#fff;box-shadow:0 .2em 0 var(--line);border:2px solid var(--line)}
+.btn.teal{background:var(--teal);color:#fff;box-shadow:0 .2em 0 #135c53}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.pulse{animation:btnPulse 1.1s ease-in-out infinite alternate}
+@keyframes btnPulse{to{box-shadow:0 .2em 0 #b07c10,0 0 0 .35em rgba(238,174,34,.45)}}
+.row{display:flex;gap:.8em;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.card{background:var(--card);border-radius:1em;padding:.9em 1.2em;box-shadow:0 .25em 0 var(--line)}
+sup{font-size:.62em;line-height:0}
+
+/* ---------- STORY-PLAYER ---------- */
+.story{padding-bottom:1.5vh}
+.stage{flex:1;min-height:0;background:#14103a;border-radius:1.2em;overflow:hidden;border:.3em solid var(--indigo);position:relative}
+.svgwrap{position:absolute;inset:0;display:flex}
+.svgwrap svg{width:100%;height:100%;display:block}
+.caption{display:flex;align-items:center;gap:.7em;margin-top:1.3vh}
+.caption p{flex:1;margin:0;font-size:1.4em;line-height:1.25;font-weight:600;min-height:2.6em;animation:capIn .8s ease}
+@keyframes capIn{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.sdots{display:flex;gap:.3em}
+.sdots i{width:.65em;height:.65em;border-radius:50%;background:var(--line)}
+.sdots i.on{background:var(--gold)}
+.bubtxt{font-family:'Baloo 2',sans-serif;font-size:30px;line-height:1.15;color:#231d45;display:flex;align-items:center;justify-content:center;height:100%;text-align:center;font-weight:700}
+/* Animationen */
+.fade{animation:fade 1s both}
+.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 100%}
+.rise{animation:rise 1.8s ease-out both}
+.walkIn{animation:walkIn 2.4s ease-out both}
+.bounce{animation:bounce .5s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+.shake{animation:shake .22s ease-in-out 10 both}
+.twinkle{animation:tw 2.5s ease-in-out infinite alternate}
+.drop{animation:drop .6s cubic-bezier(.5,0,.8,1.4) both}
+.zzz{animation:zz 3s ease-in-out infinite}
+.unroll{animation:unroll 2.6s ease-out both;transform-box:fill-box;transform-origin:50% 0}
+.grow{animation:grow 6s cubic-bezier(.3,.1,.3,1) both;transform-box:fill-box;transform-origin:0 50%}
+.vanish{animation:vanish 3s ease-in both}
+.stamp{animation:stamp .45s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:50% 50%}
+.fall{animation:fall 4s linear infinite;transform-box:fill-box;transform-origin:50% 50%}
+.d1{animation-delay:.6s}.d2{animation-delay:1.2s}.d3{animation-delay:1.8s}.d4{animation-delay:2.6s}.d5{animation-delay:3.4s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(160px)}to{opacity:1;transform:none}}
+@keyframes walkIn{from{transform:translateX(520px)}to{transform:none}}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes tw{from{opacity:.25}to{opacity:1}}
+@keyframes drop{from{opacity:0;transform:translateY(-260px)}to{opacity:1;transform:none}}
+@keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(40px,-80px)}}
+@keyframes unroll{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes vanish{from{opacity:1}to{opacity:0}}
+@keyframes stamp{from{opacity:0;transform:scale(3)}to{opacity:1;transform:scale(1)}}
+@keyframes fall{from{transform:translateY(-60px) rotate(0)}to{transform:translateY(640px) rotate(600deg)}}
+/* Vertonung: Elemente einer Sprechzeile warten, bis sie gesprochen wird */
+.stage.step [data-line]:not(.go),.stage.step [data-line]:not(.go) *{animation-play-state:paused!important}
+.stage.step [data-line].go{animation-delay:.1s!important}
+/* Vorlese-Bereich */
+.reader{display:flex;gap:1em;align-items:stretch;margin-top:1.2vh;flex:0 0 auto}
+.lines{flex:1;display:flex;align-items:center;height:6.6em;overflow:hidden;background:#fff;border-radius:1em;padding:.5em 1.1em;box-shadow:0 .25em 0 var(--line)}
+.ln{display:flex;gap:.7em;align-items:flex-start;font-size:1.55em;line-height:1.25;font-weight:700;animation:fade .35s ease}
+.role{flex:0 0 auto;font-size:.55em;font-weight:800;padding:.18em .8em;border-radius:1em;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-top:.45em;text-align:center}
+.role.n,.role.r{background:#5b4fa0}.role.k{background:var(--red)}.role.s{background:var(--teal)}
+.rctl{flex:0 0 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:.5em}
+.pNext{font-size:1.3em}
+
+/* ---------- VERMUTUNG ---------- */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw;flex:1;min-height:0;margin-top:1vh}
+.vcol{display:flex;flex-direction:column;gap:1.4vh}
+.box{background:#fff;border:2px solid var(--line);border-radius:.8em;padding:.7em 1.1em}
+.boxh{font-weight:800;font-size:1.15em;color:var(--indigo);margin-bottom:.45em}
+.task{border-left:.45em solid var(--teal)}
+.task ol{margin:.5em 0 0;padding-left:1.3em;line-height:1.4;font-size:1.08em}
+.task li{margin-bottom:.35em}
+.wtab{border-collapse:collapse;width:100%;font-size:1.2em;text-align:center;border-radius:0}
+.wtab th,.wtab td{border:2px solid var(--line);padding:.2em .4em;background:#fff;color:var(--ink)}
+.wtab th{text-align:left;background:#f6f1e4;font-weight:700;width:6.5em}
+.wtab td{font-weight:800}
+.wtab td.q{color:var(--red)}
+.wrule{margin:.6em 0 0;font-size:1.1em}
+.vlist{display:flex;flex-direction:column}
+.vhead,.vopt{display:grid;grid-template-columns:2em 1fr 4.2em;align-items:center;gap:.6em}
+.vhead{font-size:.8em;color:var(--muted);font-weight:700;padding-bottom:.2em}
+.vopt{border-top:1px solid var(--line);padding:.3em 0;font-size:1.05em;font-weight:600}
+.vl{font-weight:800;color:var(--indigo)}
+.vin{font:inherit;font-size:1.25em;font-weight:800;width:100%;text-align:center;border:2px solid var(--line);border-radius:.35em;padding:.05em 0;background:#fffdf7;color:var(--ink);-moz-appearance:textfield}
+.vin::-webkit-outer-spin-button,.vin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.vin:focus{outline:none;border-color:var(--teal);background:#eefaf8}
+
+/* ---------- BRETT ---------- */
+.board-wrap{display:flex;gap:2vw;flex:1;min-height:0}
+.board-area{height:100%;aspect-ratio:1/1;max-width:58%;flex:0 0 auto}
+#board{width:100%;height:100%;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:calc(var(--cell,60px)*.1) solid #6b3e1f;border-radius:8px;background:#6b3e1f;box-shadow:0 .4em 1em rgba(0,0,0,.15)}
+.cell{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:default;transition:background .4s}
+.cell.l{background:#f0d9b5}.cell.d{background:#b58863}
+.cell .num{position:absolute;top:2px;left:4px;font-size:calc(var(--cell,60px)*.16);font-weight:700;opacity:.55;line-height:1}
+.cell.next{cursor:pointer;box-shadow:inset 0 0 0 calc(var(--cell,60px)*.045) var(--teal)}
+.cell.ask{background:#fff3c4!important;box-shadow:inset 0 0 0 calc(var(--cell,60px)*.06) var(--red);cursor:pointer}
+.cell.ask::after{content:"?";font-size:calc(var(--cell,60px)*.55);font-weight:800;color:var(--red)}
+@keyframes pulse{from{transform:scale(.85)}to{transform:scale(1.1)}}
+.cell.filled{flex-direction:column;justify-content:center;gap:calc(var(--cell,60px)*.02);background:#fffaf0!important;padding-top:calc(var(--cell,60px)*.1);box-shadow:inset 0 0 0 1px #e2d4b4}
+.cell.filled.l{background:#fffdf7!important}
+.cell.cur{box-shadow:inset 0 0 0 calc(var(--cell,60px)*.05) var(--teal)!important}
+.cp{font-weight:800;font-size:calc(var(--cell,60px)*.3);line-height:1;color:var(--ink)}
+.cp sup{color:var(--red);font-size:.62em}
+.cv{font-weight:700;font-size:calc(var(--cell,60px)*.165);line-height:1;color:var(--muted);white-space:nowrap}
+.cell.new{animation:fade .4s ease}
+@keyframes cellNew{0%{transform:scale(1.25);z-index:2;box-shadow:0 0 0 4px var(--gold)}100%{transform:none}}
+.dots{display:grid;grid-template-columns:repeat(var(--c),auto);gap:calc(var(--cell,60px)*.02);place-items:center;flex:1;align-content:center}
+.dots i{display:block;width:calc(var(--cell,60px)*var(--w));height:calc(var(--cell,60px)*var(--w)*.48);background:#fffdf5;border:1px solid #a8936a;border-radius:50%}
+.pile{flex:1;display:flex;align-items:center;line-height:1}
+.lbl{font-weight:800;font-size:calc(var(--cell,60px)*.19);line-height:1;padding-bottom:calc(var(--cell,60px)*.06);white-space:nowrap}
+.panel{flex:1;min-width:0;display:flex;flex-direction:column;gap:.65em;overflow:auto}
+.panel .btn{font-size:.92em}
+.ptitle{font-size:1.15em;font-weight:800;color:var(--muted)}
+.pbig{font-size:3.8em;font-weight:800;line-height:1.15;margin:.05em 0 .15em}
+.panel #pBox{height:20.6em;flex:0 0 auto;overflow:hidden}
+.panel .stats2{flex:0 0 auto;height:8.4em;overflow:hidden;align-content:start}
+.fit{display:block;white-space:nowrap;overflow:hidden}
+.pbig .pw{color:var(--ink)}.pbig .pw sup{color:var(--red)}
+.pbig small{display:block;margin-top:.15em;font-size:.4em;font-weight:600;color:var(--muted)}
+.calc{font-size:1.1em;line-height:1.45;border-top:1px solid var(--line);padding-top:.35em}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:.5em 1em}
+.stats2 span{display:block;font-size:.8em;color:var(--muted);font-weight:700}
+.stats2 b{display:block;font-size:1.05em;word-break:break-all;line-height:1.2}
+.stats2 small{color:var(--muted);font-weight:600}
+.stats2 .full{grid-column:1/-1;border-top:1px solid var(--line);padding-top:.35em}
+.stats2 .full b{font-weight:700}
+.calc .cl{display:block;font-size:3em;font-weight:800;line-height:1.15;margin-bottom:.15em}
+.calc .cl sup{color:var(--red)}
+.calc .lab{display:block;font-size:.85em;font-weight:700;color:var(--muted);margin-top:.2em}
+.calc .note{display:block;font-size:1em;font-weight:600;color:var(--muted)}
+#pCompare b{display:inline}
+.calc .k{color:var(--muted);font-size:.85em;font-weight:600}
+.pow{font-size:1.25em;font-weight:800;color:var(--red)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:.6em}
+.stat{background:#fbf7ee;border-radius:.8em;padding:.4em .7em}
+.stat span{display:block;font-size:.8em;color:var(--muted);font-weight:600}
+.stat b{font-size:1em;word-break:break-all;line-height:1.15;display:block}
+.stat small{display:block;color:var(--muted);font-weight:600}
+.compare{background:#eaf7ee;border-radius:.8em;padding:.4em .7em;font-weight:600;display:flex;align-items:center;gap:.5em}
+.compare .ce{font-size:2em}
+.toggle{display:flex;align-items:center;gap:.5em;font-weight:600;cursor:pointer}
+.toggle input{width:1.4em;height:1.4em;accent-color:var(--teal)}
+.banner{background:var(--indigo);color:#fff;border-radius:.8em;padding:.5em .9em;font-weight:700;display:flex;align-items:center;gap:.6em}
+
+/* ---------- MUSTER ---------- */
+.tabs{display:flex;gap:.4em}
+.tab{font:inherit;font-weight:700;padding:.3em 1em;border-radius:.7em;border:2px solid var(--line);background:#fff;cursor:pointer;font-size:1em}
+.tab.active{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+.mpane{display:none;flex:1;min-height:0;margin-top:1.4vh}
+.mpane.active{display:flex}
+.kgrid{display:grid;grid-template-columns:1.75fr 1fr;gap:1.6vw;flex:1;min-height:0}
+.kmain{display:flex;flex-direction:column;gap:.7em;min-height:0}
+.kfeld{font-size:1.8em;font-weight:800;color:var(--blue);min-width:4.2em;text-align:center}
+.chips{display:flex;gap:.3em;flex-wrap:wrap}
+.chip{font:inherit;font-weight:700;min-width:2.3em;height:2.3em;border-radius:.6em;border:2px solid var(--line);background:#fff;cursor:pointer;font-size:.9em}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.kval{font-size:1.25em}
+.kval b{font-size:1.25em}
+.chain{display:flex;flex-wrap:wrap;gap:.3em .25em;align-items:center;align-content:center;justify-content:center;flex:1;min-height:5em;overflow:auto;padding:.9em .5em .5em;background:#fbf7ee;border-radius:.8em}
+.chain[data-sz=l]{font-size:1.5em}.chain[data-sz=m]{font-size:1.05em}.chain[data-sz=s]{font-size:.72em}
+.chain .t{width:1.7em;height:1.7em;display:grid;place-items:center;background:var(--teal);color:#fff;font-weight:800;border-radius:.3em;position:relative;transition:transform .2s,background .2s}
+.chain .t.on{background:var(--gold);color:var(--ink);transform:scale(1.12)}
+.chain .badge{position:absolute;top:-1.15em;font-size:.55em;color:var(--red);font-weight:800}
+.chain .t.fly{animation:fly .45s ease-in forwards}
+@keyframes fly{to{transform:translate(0,-40px) scale(.1);opacity:0}}
+.chain .dotm{font-weight:800;color:var(--muted)}
+.chain .eqv{font-weight:800;margin-left:.3em}
+.chain.gone .dotm,.chain.gone .eqv{opacity:0;transition:opacity .4s}
+.startnote{font-size:1.1em;font-weight:600;max-width:24em;text-align:center}
+.kpow{font-size:4.5em;font-weight:800;line-height:1;animation:pop .6s cubic-bezier(.3,1.6,.5,1) both}
+.kpow .b{color:var(--teal)}.kpow sup{color:var(--red)}
+.kpowv{font-size:2em;font-weight:800;margin-left:.3em;animation:fade .6s .3s both}
+.kcounter{font-size:1.35em;font-weight:800;color:var(--red)}
+.kres{min-height:3.2em;font-size:1.15em;line-height:1.3;display:flex;align-items:center}
+.lb{color:var(--teal);font-weight:800}.le{color:var(--red);font-weight:800}
+.kheft{display:flex;flex-direction:column;gap:.4em;min-height:0;overflow:auto}
+.hempty{color:var(--muted);font-weight:600}
+.hrow{display:grid;grid-template-columns:4.6em 1.4em 3.2em 1fr;align-items:center;font-size:1.2em;border-bottom:2px dashed var(--line);animation:fade .5s}
+.hf b{color:var(--blue)}.hp{font-weight:800}.hp sup{color:var(--red);font-size:.7em}.hv{color:var(--muted);font-size:.85em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rgrid{display:grid;grid-template-columns:1.6fr 1fr;gap:1.6vw;flex:1;min-height:0}
+.rq{display:flex;flex-direction:column;gap:.8em;justify-content:center}
+.rtype{font-weight:800;color:var(--teal);font-size:1.1em}
+.rquest{font-size:2em;font-weight:800;line-height:1.2}
+.rin{font-size:2.6em;font-weight:800;display:flex;align-items:center;gap:.2em}
+.rin input{font:inherit;width:2.6em;text-align:center;border:4px solid var(--line);border-radius:.25em;padding:0;color:var(--red);background:#fffdf7;-moz-appearance:textfield}
+.rin input::-webkit-outer-spin-button,.rin input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rin input:focus{outline:none;border-color:var(--teal)}
+.rin input.sup{font-size:.55em;width:2.4em;align-self:flex-start;margin-top:-.15em}
+.rin .btn{font-size:.4em;margin-left:.6em}
+.rfb{min-height:2.8em;font-size:1.25em;font-weight:700;line-height:1.3}
+.rfb.ok{color:var(--green)}.rfb.no{color:var(--red)}
+.mini{display:grid;grid-template-columns:repeat(8,1fr);aspect-ratio:1;border:6px solid #6b3e1f;border-radius:6px;width:100%}
+.mini div{display:grid;place-items:center;font-size:.75em;font-weight:700;color:rgba(0,0,0,.4)}
+.mini .l{background:#f0d9b5}.mini .d{background:#b58863}
+.mini div.hl{background:var(--red);color:#fff;animation:pulse .9s infinite alternate}
+.mini div.ok{background:var(--green);color:#fff}
+
+/* ---------- MUSTER-/AUFLÖSUNG-Reveal ---------- */
+.reveal{background:#fff;border:3px dashed var(--line);border-radius:1em;padding:.7em 1em;cursor:pointer;font-weight:600}
+.reveal .ans{display:none;margin-top:.4em;font-size:1.05em}
+.reveal.open{border-style:solid;border-color:var(--green);background:#eaf7ee}
+.reveal.open .ans{display:block;animation:fade .5s}
+.reveal .tap{color:var(--muted);font-size:.85em}
+.reveal.open .tap{display:none}
+.agrid{display:grid;grid-template-columns:1.35fr 1fr;gap:2vw;flex:1;min-height:0;margin-top:1vh}
+.huge{font-size:2.5em;font-weight:800;color:var(--red);line-height:1.1;min-height:1.1em;word-break:break-all}
+.bars{display:grid;gap:.3em;margin-top:.4em}
+.bars .bh{font-weight:700;margin-top:.35em;opacity:0;animation:fade .4s both}
+.bar{display:grid;grid-template-columns:13.5em 1fr 2.2em;white-space:nowrap;align-items:center;gap:.6em;font-weight:600;font-size:.95em;opacity:0;animation:barIn .45s ease both;border-radius:.4em;padding:.05em .3em}
+.bar .tr{background:#f1ead9;border-radius:.4em;height:1.15em;overflow:hidden}
+.bar .fl{height:100%;width:0;background:#c9b58a;border-radius:.4em;transition:width 1.1s cubic-bezier(.2,.8,.2,1),background .5s}
+.bar b{text-align:right;font-size:1.1em}
+.bar.win .fl{background:var(--green)}
+.bar.win{background:#eaf7ee;animation:barIn .45s ease both,winGlow 1s ease both;animation-delay:inherit,0s}
+.bar .ck{display:inline-block;color:var(--green);font-weight:800;margin-left:.3em;transform:scale(0);transition:transform .4s cubic-bezier(.3,1.8,.5,1)}
+.bar.win .ck{transform:scale(1)}
+.bars .vn{color:var(--muted);font-weight:600}
+@keyframes barIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+@keyframes winGlow{0%{box-shadow:0 0 0 0 rgba(46,158,91,.5)}100%{box-shadow:0 0 0 .5em rgba(46,158,91,0)}}
+
+/* ---------- MERKSATZ ---------- */
+.merk{background:#fff;border:.25em solid var(--gold);border-radius:1.2em;padding:1em 1.5em;margin-top:1vh}
+.formula{display:flex;align-items:flex-end;justify-content:center;gap:.4em;font-size:3.2em;font-weight:800;margin:.2em 0 .1em}
+.formula .base{color:var(--teal)}
+.formula .exp{color:var(--red);font-size:.55em}
+.legend{display:flex;justify-content:center;gap:2.5em;font-weight:700;flex-wrap:wrap}
+.legend .b{color:var(--teal)}.legend .x{color:var(--red)}.legend .v{color:var(--indigo)}
+.ex{display:grid;grid-template-columns:repeat(4,1fr);gap:1em;margin-top:.6em}
+.ex .reveal{font-size:1.35em;text-align:center;min-height:6.5em;display:flex;flex-direction:column;justify-content:center}
+.ex .reveal .q{font-size:1.25em;font-weight:800}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;background:rgba(20,16,58,.55);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.modal .card{max-width:min(48em,92vw);max-height:90vh;overflow:auto}
+.modal ul{margin:.3em 0 .8em;padding-left:1.2em;line-height:1.35}
+.vset{background:#f4f0ff;border-radius:.8em;padding:.6em .9em;margin-bottom:.8em;line-height:1.6}
+.vset select{font:inherit;font-size:.85em;max-width:18em}
+</style>
+</head>
+<body>
+<header>
+  <h1 title="Sissa &amp; das Schachbrett">🍚 Sissa</h1>
+  <nav id="nav"></nav>
+  <button class="hbtn" id="notesBtn">💡 Hinweise</button>
+  <button class="hbtn" id="fsBtn">⛶</button>
+</header>
+<main>
+  <!-- 1 GESCHICHTE -->
+  <section class="page story" id="intro"></section>
+
+  <!-- 2 VERMUTUNG -->
+  <section class="page" id="vermutung">
+    <h2>Vermutung</h2>
+    <div class="vgrid">
+      <div class="vcol">
+        <div class="box">
+          <div class="boxh">Sissas Wunsch</div>
+          <table class="wtab"><tr><th>Feld</th><td>1</td><td>2</td><td>3</td><td>4</td><td>…</td><td>64</td></tr><tr><th>Reiskörner</th><td>1</td><td>2</td><td>4</td><td>8</td><td>…</td><td class="q">?</td></tr></table>
+          <p class="wrule">Auf jedes Feld kommen <b>doppelt so viele</b> Reiskörner wie auf das Feld davor.</p>
+        </div>
+        <div class="box task">
+          <div class="row" style="justify-content:space-between"><div class="boxh" style="margin:0">Arbeitsauftrag</div><button class="btn sec" id="timerBtn">Timer 0:30</button></div>
+          <ol>
+            <li><b>Überlege allein (30 Sekunden):</b> Beantworte Frage A und Frage B für dich. Sprich dabei mit niemandem.</li>
+            <li><b>Abstimmung:</b> Melde dich bei Frage A und Frage B für jeweils eine Antwort.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="vcol">
+        <div class="box"><div class="boxh">Frage A: Ist das ein guter Deal für den König?</div><div class="vlist" id="q1"></div></div>
+        <div class="box"><div class="boxh">Frage B: Wie viel Reis muss der König am Ende ungefähr abgeben?</div><div class="vlist" id="q2"></div></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:1.2vh"><div class="spacer"></div><button class="btn" data-go="2">Weiter zum Schachbrett ▶</button></div>
+  </section>
+
+  <!-- 3 SCHACHBRETT -->
+  <section class="page" id="brett">
+    <div class="board-wrap">
+      <div class="board-area"><div id="board"></div></div>
+      <aside class="panel">
+        <div class="box" id="pBox">
+          <div class="ptitle" id="pTitle"></div>
+          <div class="pbig" id="pBig"></div>
+          <div class="calc" id="pCalc"></div>
+        </div>
+        <div class="box stats2">
+          <div><span>Körner insgesamt</span><b id="pTotal">0</b><small id="pTotalW"></small></div>
+          <div><span>Gewicht (ca.)</span><b id="pWeight">0 g</b></div>
+          <div class="full"><span>Das entspricht ungefähr</span><b id="pCompare"></b></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="bNext" style="font-size:1.1em">Nächstes Feld ▶</button>
+          <button class="btn sec" id="bUndo">◀ Zurück</button>
+          <div class="spacer"></div>
+          <button class="btn sec" id="bRow">Reihe füllen</button>
+          <button class="btn sec" id="bAll">Alle füllen</button>
+          <button class="btn sec" id="bReset">Neu</button>
+        </div>
+        <label class="toggle"><input type="checkbox" id="tPredict"> Vor dem Aufdecken vermuten lassen</label>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 4 MUSTER -->
+  <section class="page" id="muster">
+    <div class="row"><h2>🔍 Das Muster entdecken</h2><div class="spacer"></div>
+    </div>
+    <div class="mpane active" id="mt-kette">
+      <div class="kgrid">
+        <div class="card kmain">
+          <div class="row">
+            <button class="btn sec" id="kPrev">◀</button><div class="kfeld">Feld <span id="kN"></span></div><button class="btn sec" id="kNext">▶</button>
+            <div class="spacer"></div><div class="chips" id="kChips"></div>
+          </div>
+          <div class="kval">Auf diesem Feld liegen <b id="kVal"></b> Körner. Als Rechnung:</div>
+          <div class="chain" id="kChain"></div>
+          <div class="row">
+            <button class="btn" id="kCount">🔢 Zweien zählen</button>
+            <button class="btn teal" id="kShort">✨ Kürzer schreiben</button>
+            <div class="kcounter" id="kCounter"></div>
+            <div class="spacer"></div>
+            <button class="btn sec" id="kAgain">↺ Kette zeigen</button>
+          </div>
+          <div class="kres" id="kRes"></div>
+        </div>
+        <div class="card kheft">
+          <h3 style="margin:0">📒 Forscherheft</h3>
+          <div id="kList"></div>
+          <div class="spacer"></div>
+          <div class="row"><div class="spacer"></div><button class="btn" data-go="4">Zur Auflösung ▶</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 AUFLÖSUNG -->
+  <section class="page" id="aufloesung">
+    <h2>💡 War das ein guter Deal?</h2>
+    <div class="agrid">
+      <div style="display:flex;flex-direction:column;gap:1em">
+        <div class="card">
+          <h3>Alle 64 Felder zusammen ergeben …</h3>
+          <div class="huge" id="hugeNum"></div>
+          <div id="hugeInfo" style="display:none;font-size:1.1em;line-height:1.35;margin-top:.4em">
+            … also über <b>18 Trillionen Reiskörner</b>!<br>
+            Gewicht: ca. <b>461 Milliarden Tonnen</b> Reis.<br>
+            🌍 Das ist ungefähr <b>900-mal so viel</b>, wie heute auf der ganzen Welt in einem Jahr an Reis geerntet wird.
+            <div style="color:var(--muted);font-size:.8em;margin-top:.3em">Annahmen: 1 Reiskorn ≈ 0,025 g · Welt-Reisernte ≈ 500 Millionen Tonnen pro Jahr</div>
+          </div>
+          <div class="row" style="margin-top:.6em"><button class="btn" id="hugeBtn">Aufdecken ✨</button></div>
+        </div>
+        <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">Eure Vermutungen</h3><button class="btn" id="vShow">Ergebnisse zeigen</button></div><div class="bars" id="vBars"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1em">
+        <div class="reveal" data-rv>🤓 <b>Was wäre, wenn …</b> Sissa auf jedes Feld nur <b>1 Korn mehr</b> gewünscht hätte? (1, 2, 3, 4, … 64)<div class="tap">Tippen zum Aufdecken</div><div class="ans">Dann wären es nur <b>2.080 Körner</b> – ca. 52 g, also eine kleine Schüssel Reis.<br><br>➜ <b>Immer wieder verdoppeln</b> (·2) lässt Zahlen viel, viel schneller wachsen als immer etwas dazuzählen (+1).</div></div>
+        <div class="card" style="background:var(--indigo);color:#fff"><h3 style="color:var(--gold2)">🎬 Und wie ging die Geschichte aus?</h3><p style="margin:.2em 0 .8em">Konnte der König sein Versprechen halten?</p><button class="btn" data-go="5">Das Ende ansehen ▶</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 DAS ENDE -->
+  <section class="page story" id="ende"></section>
+
+  <!-- 7 MERKSATZ -->
+  <section class="page" id="merke">
+    <h2>📝 Merke: Potenzen</h2>
+    <div class="merk">
+      <div style="font-size:1.25em;font-weight:700;text-align:center">Wird dieselbe Zahl mehrmals mit sich selbst multipliziert, kann man das kürzer als <span style="color:var(--red)">Potenz</span> schreiben.</div>
+      <div class="formula"><span>2 · 2 · 2 · 2 · 2</span><span>=</span><span><span class="base">2</span><sup class="exp">5</sup></span><span>=</span><span style="color:var(--indigo)">32</span></div>
+      <div style="text-align:center;font-size:1.1em;margin-bottom:.5em">Sprich: „<b>2 hoch 5</b>“</div>
+      <div class="legend"><span class="b">Basis 2: welche Zahl multipliziert wird</span><span class="x">Exponent 5: wie oft sie als Faktor vorkommt</span><span class="v">Potenzwert 32: das Ergebnis</span></div>
+    </div>
+    <h3 style="margin-top:1em">Schnell-Check – erst überlegen, dann tippen:</h3>
+    <div class="ex">
+      <div class="reveal" data-rv><div class="q">3 · 3 · 3 · 3</div>als Potenz?<div class="tap">Tippen</div><div class="ans">3<sup>4</sup> = 81</div></div>
+      <div class="reveal" data-rv><div class="q">10<sup>3</sup></div>berechne!<div class="tap">Tippen</div><div class="ans">10 · 10 · 10 = 1.000</div></div>
+      <div class="reveal" data-rv><div class="q">5<sup>2</sup></div>berechne!<div class="tap">Tippen</div><div class="ans">5 · 5 = 25</div></div>
+      <div class="reveal" data-rv><div class="q">⚠️ 2<sup>3</sup> = 6 ?</div>Stimmt das?<div class="tap">Tippen</div><div class="ans"><b>Nein!</b> 2<sup>3</sup> = 2 · 2 · 2 = 8<br>(2 · 3 = 6 ist etwas anderes)</div></div>
+    </div>
+  </section>
+</main>
+
+<div class="modal" id="modal"><div class="card"><h3 id="mTitle">Hinweise für die Lehrkraft</h3><div id="mBody"></div><div class="row"><div class="spacer"></div><button class="btn" id="mClose">Schließen</button></div></div></div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PAGES=['intro','vermutung','brett','muster','aufloesung','ende','merke'];
+const NAMES=['Geschichte','Vermutung','Schachbrett','Muster','Auflösung','Das Ende','Merksatz'];
+let cur=0;
+
+/* ================= ZAHLEN ================= */
+function fmt(b){try{return BigInt(b).toLocaleString('de-DE')}catch(e){return String(b).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}}
+const UNITS=[[1e18,'Trillion','Trillionen','Trill.'],[1e15,'Billiarde','Billiarden','Brd.'],[1e12,'Billion','Billionen','Bio.'],[1e9,'Milliarde','Milliarden','Mrd.'],[1e6,'Million','Millionen','Mio.'],[1e3,'Tausend','Tausend','Tsd.']];
+function word(n,short=false){for(const[u,s,p,a]of UNITS){if(n>=u&&(short||u>=1e6)){const v=n/u;const t=v.toLocaleString('de-DE',{maximumFractionDigits:v<10?1:0});return t+' '+(short?a:(t==='1'?s:p))}}return Math.round(n).toLocaleString('de-DE')}
+const grains=n=>2n**BigInt(n-1);
+const total=n=>2n**BigInt(n)-1n;
+function weight(g){if(g<1000)return g.toLocaleString('de-DE',{maximumFractionDigits:g<10?2:0})+' g';if(g<1e6)return(g/1000).toLocaleString('de-DE',{maximumFractionDigits:g<1e4?1:0})+' kg';const t=g/1e6;return(t<1e6?t.toLocaleString('de-DE',{maximumFractionDigits:t<10?1:0}):word(t))+' t'}
+const GRAM=0.025;
+const BENCH=[{g:5,e:'🥄',t:'Teelöffel'},{g:250,e:'🥣',t:'Schüsseln'},{g:1000,e:'📦',t:'Packungen (1 kg)'},{g:25000,e:'🛍️',t:'Säcke (25 kg)'},{g:40e6,e:'🚚',t:'LKW-Ladungen (40 t)'},{g:2e11,e:'🚢',t:'Riesen-Frachtschiffe (200.000 t)'},{g:5e14,e:'🌍',t:'Welt-Reisernten eines Jahres'}];
+function compareText(g){if(g<5)return{e:'',t:'weniger als ein Teelöffel'};let b=BENCH[0];for(const x of BENCH)if(g>=x.g)b=x;const f=g/b.g;const ft=f<10?f.toLocaleString('de-DE',{maximumFractionDigits:1}):Number(f.toPrecision(2)).toLocaleString('de-DE');return{e:b.e,t:`Das sind ungefähr <b>${ft}</b> ${b.t}.`}}
+
+/* ================= NAVIGATION ================= */
+const nav=$('#nav');
+NAMES.forEach((n,i)=>{const b=document.createElement('button');b.innerHTML=`<b>${i+1}</b>${n}`;b.onclick=()=>go(i);nav.appendChild(b)});
+let players={};
+function go(i){
+  const prev=PAGES[cur];cur=Math.max(0,Math.min(PAGES.length-1,i));
+  if(players[prev]&&prev!==PAGES[cur])players[prev].leave();
+  PAGES.forEach((p,k)=>$('#'+p).classList.toggle('active',k===cur));
+  [...nav.children].forEach((b,k)=>{b.classList.toggle('active',k===cur);b.classList.toggle('done',k<cur)});
+  if(players[PAGES[cur]])players[PAGES[cur]].enter();
+  if(PAGES[cur]==='brett'){sizeBoard();fitAll()}
+  if(PAGES[cur]==='aufloesung')renderBars();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(+b.dataset.go)});
+$('#fsBtn').onclick=()=>{try{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen()}catch(e){}};
+$$('[data-rv]').forEach(r=>r.onclick=()=>r.classList.toggle('open'));
+
+/* ================= SVG-BAUSTEINE ================= */
+function rnd(seed){let s=seed;return()=>{s=(s*9301+49297)%233280;return s/233280}}
+function stars(n,h,seed=7){const r=rnd(seed);let o='';for(let i=0;i<n;i++)o+=`<circle class="twinkle" style="animation-delay:${(r()*2.5).toFixed(2)}s" cx="${(r()*1200).toFixed(0)}" cy="${(r()*h).toFixed(0)}" r="${(1+r()*2.2).toFixed(1)}" fill="#fff"/>`;return o}
+function hall(){
+  let tiles='';for(let i=0;i<14;i++)tiles+=`<path d="M${i*100} 450 L${i*100-80} 560" stroke="#4d3480" stroke-width="3"/>`;
+  return `<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d2f82"/><stop offset="1" stop-color="#261b5a"/></linearGradient></defs>
+  <rect width="1200" height="560" fill="url(#wall)"/>
+  <path d="M500 330 V160 Q600 50 700 160 V330 Z" fill="#120e36" stroke="#eeae22" stroke-width="8"/>
+  ${[[540,170],[610,120],[660,210],[560,260],[680,280],[590,200]].map(([x,y])=>`<circle class="twinkle" cx="${x}" cy="${y}" r="2.5" fill="#fff"/>`).join('')}
+  <circle cx="650" cy="170" r="26" fill="#fff3c4"/>
+  ${[70,1130].map(x=>`<rect x="${x-26}" y="60" width="52" height="390" fill="#7a5bb0"/><rect x="${x-36}" y="48" width="72" height="20" rx="4" fill="#eeae22"/><rect x="${x-36}" y="436" width="72" height="16" rx="4" fill="#eeae22"/>`).join('')}
+  <path d="M96 70 Q300 150 500 95 M700 95 Q900 150 1104 70" stroke="#c8423b" stroke-width="10" fill="none"/>
+  <path d="M96 70 Q300 150 500 95 M700 95 Q900 150 1104 70" stroke="#eeae22" stroke-width="3" fill="none" stroke-dasharray="4 14"/>
+  ${[300,900].map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="40" stroke="#eeae22" stroke-width="3"/><path d="M${x-22} 40 h44 l-10 34 h-24z" fill="#eeae22"/><circle cx="${x}" cy="84" r="9" fill="#ffd76a" class="twinkle"/>`).join('')}
+  <rect y="450" width="1200" height="110" fill="#5b3f8f"/>${tiles}
+  <path d="M0 450 H1200" stroke="#eeae22" stroke-width="5"/>`;
+}
+function throne(x){return `<rect x="${x-85}" y="195" width="170" height="255" rx="80" fill="#eeae22"/><rect x="${x-65}" y="222" width="130" height="228" rx="62" fill="#a8322c"/><circle cx="${x}" cy="215" r="10" fill="#ffd76a"/>`}
+function king(x,y,mood='neutral'){
+  const ink='#2b1a10';
+  const eyes= mood==='bored'?`<path d="M-24 -222 h15 M9 -222 h15" stroke="${ink}" stroke-width="5" stroke-linecap="round"/><path d="M-27 -233 q9 5 19 2 M8 -231 q10 3 19 -2" stroke="${ink}" stroke-width="3" fill="none"/>`
+    : mood==='laugh'?`<path d="M-25 -218 q8 -12 17 0 M8 -218 q8 -12 17 0" stroke="${ink}" stroke-width="5" fill="none" stroke-linecap="round"/>`
+    : mood==='shock'?`<circle cx="-16" cy="-224" r="11" fill="#fff"/><circle cx="16" cy="-224" r="11" fill="#fff"/><circle cx="-16" cy="-222" r="5" fill="${ink}"/><circle cx="16" cy="-222" r="5" fill="${ink}"/><path d="M-30 -244 l15 -7 M30 -244 l-15 -7" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`
+    : `<circle cx="-15" cy="-222" r="5.5" fill="${ink}"/><circle cx="15" cy="-222" r="5.5" fill="${ink}"/>`;
+  const mouth= mood==='bored'?`<path d="M-12 -194 h24" stroke="${ink}" stroke-width="4" stroke-linecap="round"/>`
+    : mood==='laugh'?`<path d="M-20 -200 q20 34 40 0 z" fill="#6b1a14"/>`
+    : mood==='shock'?`<ellipse cx="0" cy="-193" rx="10" ry="13" fill="#6b1a14"/><path d="M48 -246 q9 15 0 22 q-9 -7 0 -22z" fill="#7fd0ff"/>`
+    : mood==='happy'?`<path d="M-17 -198 q17 18 34 0" stroke="${ink}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`
+    : `<path d="M-10 -194 q10 4 20 0" stroke="${ink}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  return `<g transform="translate(${x},${y})">
+   <path d="M-78 0 L-54 -165 Q0 -186 54 -165 L78 0 Z" fill="#c8423b"/>
+   <path d="M-11 -172 L11 -172 L16 0 L-16 0 Z" fill="#eeae22"/>
+   <rect x="-57" y="-106" width="114" height="15" fill="#eeae22"/>
+   <path d="M-54 -160 Q-95 -110 -60 -70" stroke="#c8423b" stroke-width="26" fill="none" stroke-linecap="round"/>
+   <path d="M54 -160 Q95 -110 60 -70" stroke="#c8423b" stroke-width="26" fill="none" stroke-linecap="round"/>
+   <circle cx="-60" cy="-68" r="14" fill="#d9a074"/><circle cx="60" cy="-68" r="14" fill="#d9a074"/>
+   <circle cx="0" cy="-215" r="47" fill="#d9a074"/>
+   <path d="M-38 -205 Q-32 -148 0 -142 Q32 -148 38 -205 Q22 -176 0 -180 Q-22 -176 -38 -205Z" fill="#3b2a20"/>
+   ${eyes}${mouth}
+   <path d="M-43 -248 L-43 -293 L-21 -268 L0 -304 L21 -268 L43 -293 L43 -248 Z" fill="#ffd76a" stroke="#b07c10" stroke-width="3"/>
+   <circle cx="0" cy="-262" r="6.5" fill="#c8423b"/><circle cx="-26" cy="-258" r="4" fill="#1f8a7d"/><circle cx="26" cy="-258" r="4" fill="#1f8a7d"/>
+  </g>`;
+}
+function sissa(x,y,carry=false){
+  return `<g transform="translate(${x},${y})">
+   <path d="M-62 0 L-46 -160 Q0 -178 46 -160 L62 0 Z" fill="#1f8a7d"/>
+   <path d="M-46 -158 L34 0 L54 0 L-28 -166Z" fill="#eeae22" opacity=".9"/>
+   ${carry?`<g transform="translate(-95,-150) rotate(-8)">${miniBoard(0,0,110)}</g><circle cx="-90" cy="-95" r="13" fill="#c98b5e"/><circle cx="12" cy="-95" r="13" fill="#c98b5e"/>`
+          :`<path d="M-46 -150 Q-80 -100 -50 -66" stroke="#1f8a7d" stroke-width="24" fill="none" stroke-linecap="round"/><circle cx="-50" cy="-64" r="13" fill="#c98b5e"/>`}
+   <circle cx="0" cy="-205" r="43" fill="#c98b5e"/>
+   <path d="M-31 -196 Q-27 -118 0 -102 Q27 -118 31 -196 Q16 -170 0 -173 Q-16 -170 -31 -196Z" fill="#eeeeee"/>
+   <circle cx="-14" cy="-213" r="5" fill="#2b1a10"/><circle cx="14" cy="-213" r="5" fill="#2b1a10"/>
+   <path d="M-11 -190 q11 9 22 0" stroke="#2b1a10" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+   <ellipse cx="0" cy="-246" rx="52" ry="31" fill="#fff6e3" stroke="#e0cfa8" stroke-width="3"/>
+   <path d="M-47 -246 Q0 -224 47 -252" stroke="#e0cfa8" stroke-width="4" fill="none"/>
+   <circle cx="0" cy="-256" r="8" fill="#c8423b"/><path d="M0 -264 q14 -30 4 -44" stroke="#eeae22" stroke-width="4" fill="none"/>
+  </g>`;
+}
+function scribe(x,y,mood='calm'){
+  const ink='#2b1a10';
+  const mouth=mood==='worried'?`<path d="M-12 -183 q6 -6 12 0 q6 6 12 0" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`:`<path d="M-10 -184 q10 8 20 0" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  const brows=mood==='worried'?`<path d="M-27 -224 l13 -7 M27 -224 l-13 -7" stroke="${ink}" stroke-width="3.5" stroke-linecap="round"/>`:'';
+  return `<g transform="translate(${x},${y})">
+   <path d="M-58 0 L-44 -155 Q0 -172 44 -155 L58 0 Z" fill="#3d6fb0"/>
+   <path d="M-20 -164 L0 -128 L20 -164" stroke="#ffd76a" stroke-width="6" fill="none"/>
+   <path d="M-44 -148 Q-78 -100 -48 -64" stroke="#3d6fb0" stroke-width="22" fill="none" stroke-linecap="round"/><circle cx="-48" cy="-62" r="12" fill="#e3b48c"/>
+   <circle cx="0" cy="-200" r="40" fill="#e3b48c"/>
+   ${brows}
+   <circle cx="-14" cy="-206" r="11" fill="#fff" fill-opacity=".55" stroke="#333" stroke-width="3"/><circle cx="14" cy="-206" r="11" fill="#fff" fill-opacity=".55" stroke="#333" stroke-width="3"/><path d="M-3 -206 h6" stroke="#333" stroke-width="3"/>
+   <circle cx="-14" cy="-206" r="3.5" fill="${ink}"/><circle cx="14" cy="-206" r="3.5" fill="${ink}"/>
+   <path d="M-16 -192 q16 -8 32 0" stroke="#999" stroke-width="5" fill="none" stroke-linecap="round"/>
+   ${mouth}
+   <rect x="-32" y="-266" width="64" height="36" rx="6" fill="#5b2a86"/><ellipse cx="0" cy="-266" rx="32" ry="8" fill="#7a46a8"/><rect x="-36" y="-236" width="72" height="9" rx="4" fill="#ffd76a"/>
+  </g>`;
+}
+function scrollSVG(x,y,w,h,lines,fs=20){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f7ecd2" stroke="#c9b07a" stroke-width="3"/><rect x="${x-8}" y="${y-8}" width="${w+16}" height="16" rx="8" fill="#c9a46a"/><rect x="${x-8}" y="${y+h-8}" width="${w+16}" height="16" rx="8" fill="#c9a46a"/>${lines.map((t,i)=>`<text x="${x+16}" y="${y+30+i*(fs+4)}" font-size="${fs}" font-weight="700" fill="#5a3d1a">${t}</text>`).join('')}`}
+function sack(x,y,s=1){return `<g transform="translate(${x},${y}) scale(${s})"><path d="M-34 0 Q-46 -40 -26 -62 L-12 -70 Q0 -78 12 -70 L26 -62 Q46 -40 34 0 Z" fill="#c9a46a" stroke="#8a6a3a" stroke-width="3"/><path d="M-14 -66 Q0 -60 14 -66" stroke="#6b4a22" stroke-width="5" fill="none"/><text x="0" y="-22" text-anchor="middle" font-size="17" font-weight="800" fill="#6b4a22">REIS</text></g>`}
+function miniBoard(x,y,s){let r='';const c=s/8;for(let i=0;i<8;i++)for(let j=0;j<8;j++)r+=`<rect x="${x+j*c}" y="${y+i*c}" width="${c+.3}" height="${c+.3}" fill="${(i+j)%2?'#b58863':'#f0d9b5'}"/>`;return `${r}<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="none" stroke="#6b3e1f" stroke-width="5"/>`}
+function bubble(x,y,w,h,html,tx,ty,cls='pop d1',line=null){
+  const bx=Math.max(x+30,Math.min(x+w-74,tx<x?x+30:tx-20));
+  return `<g class="${cls}"${line!==null?` data-line="${line}"`:''}><path d="M${bx} ${y+h-4} L${tx} ${ty} L${bx+44} ${y+h-4}Z" fill="#fff"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="26" fill="#fff"/>
+  <foreignObject x="${x+18}" y="${y+8}" width="${w-36}" height="${h-16}"><div xmlns="http://www.w3.org/1999/xhtml" class="bubtxt">${html}</div></foreignObject></g>`;
+}
+function grain(cx,cy,rot,cls,delay){return `<ellipse class="${cls}" style="animation-delay:${delay}s" cx="${cx}" cy="${cy}" rx="9" ry="4.5" transform="rotate(${rot} ${cx} ${cy})" fill="#fffdf5" stroke="#a8936a" stroke-width="1.5"/>`}
+function confetti(n){const r=rnd(11),cols=['#ffd76a','#c8423b','#1f8a7d','#ffffff','#7a5bb0'];let o='';for(let i=0;i<n;i++)o+=`<rect class="fall" style="animation-delay:${(r()*3).toFixed(2)}s;animation-duration:${(3+r()*3).toFixed(2)}s" x="${(r()*1200).toFixed(0)}" y="-20" width="${8+r()*8|0}" height="${12+r()*10|0}" fill="${cols[i%5]}"/>`;return o}
+
+/* ================= VORLESE-PLAYER ================= */
+const ROLE={n:'Erzähler',k:'König',s:'Sissa',r:'Erzähler als Rechenmeister'};
+function Player(secId,scenes,opts){
+  scenes.forEach(sc=>{if(!sc.say)sc.say=[{w:'n',t:sc.text}]});
+  const sec=$('#'+secId);
+  sec.innerHTML=`<div class="stage step"><div class="svgwrap"></div></div>
+  <div class="reader"><div class="lines"></div>
+   <div class="rctl"><div class="row" style="gap:.5em;flex-wrap:nowrap"><button class="btn sec pPrev" title="Zurück">◀</button><button class="btn pNext">Weiter ▶</button></div><div class="sdots"></div></div></div>`;
+  const q=x=>sec.querySelector(x),wrap=q('.svgwrap');
+  let i=0,li=0;
+  function render(fresh){
+    const sc=scenes[i];
+    if(fresh)wrap.innerHTML=`<svg viewBox="0 0 1200 560" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${sc.svg()}</svg>`;
+    for(let x=0;x<=li;x++)wrap.querySelectorAll(`[data-line="${x}"]`).forEach(e=>e.classList.add('go'));
+    const l=sc.say[li],box=q('.lines');box.innerHTML=`<div class="ln"><span class="role ${l.w}">${ROLE[l.w]}</span><span>${l.t}</span></div>`;
+    const ln=box.firstChild;if(box.clientHeight){let fs=parseFloat(getComputedStyle(ln).fontSize),k=0;while(ln.scrollHeight>box.clientHeight-12&&k<30){fs*=.94;ln.style.fontSize=fs+'px';k++}}
+    q('.sdots').innerHTML=scenes.map((_,j)=>`<i class="${j===i?'on':''}"></i>`).join('');
+    q('.pPrev').disabled=i===0&&li===0;
+    const last=i===scenes.length-1&&li===sc.say.length-1;
+    q('.pNext').textContent=last?opts.finish:'Weiter ▶';q('.pNext').classList.toggle('pulse',last);
+  }
+  function show(k,upto=0){i=Math.max(0,Math.min(scenes.length-1,k));li=Math.max(0,Math.min(upto,scenes[i].say.length-1));render(true)}
+  function next(){if(li<scenes[i].say.length-1){li++;render(false)}else if(i<scenes.length-1)show(i+1,0);else opts.onFinish()}
+  function prev(){if(li>0)show(i,li-1);else if(i>0)show(i-1,scenes[i-1].say.length-1)}
+  q('.pNext').onclick=next;q('.pPrev').onclick=prev;
+  show(0);
+  return{enter(){render(true)},leave(){},next,prev};
+}
+
+/* ---------- Szenen: Anfang ---------- */
+const INTRO=[
+ {text:'Vor langer, langer Zeit lebte in Indien ein mächtiger König. Er hatte Paläste, Gold und Edelsteine – mehr, als er zählen konnte.',
+  svg:()=>`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d0a2c"/><stop offset="1" stop-color="#4a3590"/></linearGradient></defs>
+  <rect width="1200" height="560" fill="url(#sky)"/>${stars(60,330)}
+  <circle cx="1010" cy="100" r="70" fill="#fff3c4" opacity=".15"/><circle cx="1010" cy="100" r="48" fill="#fff3c4"/>
+  <g class="rise">
+   <rect x="290" y="300" width="620" height="210" fill="#f3e3c3"/>
+   <path d="M480 300 Q480 170 600 115 Q720 170 720 300Z" fill="#f8ecd3"/><path d="M600 115 V70" stroke="#eeae22" stroke-width="6"/><circle cx="600" cy="64" r="9" fill="#eeae22"/>
+   ${[360,840].map(x=>`<path d="M${x-55} 300 Q${x-55} 225 ${x} 195 Q${x+55} 225 ${x+55} 300Z" fill="#f8ecd3"/><path d="M${x} 195 V170" stroke="#eeae22" stroke-width="5"/>`).join('')}
+   ${[250,950].map(x=>`<rect x="${x-22}" y="190" width="44" height="320" fill="#efdcb8"/><path d="M${x-30} 190 Q${x} 140 ${x+30} 190Z" fill="#f8ecd3"/><path d="M${x} 150 V125" stroke="#eeae22" stroke-width="4"/>`).join('')}
+   <path d="M555 510 V420 Q600 370 645 420 V510Z" fill="#3a2a5c"/>
+   ${[340,420,760,840].map(x=>`<path d="M${x-18} 440 V395 Q${x} 372 ${x+18} 395 V440Z" fill="#ffd76a" class="twinkle"/>`).join('')}
+  </g>
+  <rect y="505" width="1200" height="55" fill="#1d3a2e"/>`},
+ {text:'Doch dem König war furchtbar langweilig. Kein Gaukler, kein Musiker und kein Spiel konnte ihn mehr aufheitern.',
+  say:[{w:'n',t:'Doch dem König war furchtbar langweilig. Kein Gaukler, kein Musiker und kein Spiel konnte ihn mehr aufheitern.'},{w:'k',t:'Ach … mir ist sooo langweilig.'}],
+  svg:()=>`${hall()}${throne(300)}<g class="fade">${king(300,450,'bored')}</g>
+  ${bubble(420,50,360,110,'Ach … mir ist sooo langweilig.',360,225,'pop d1',1)}
+  <text class="zzz" x="380" y="250" font-size="40" font-weight="800" fill="#ffd76a">z</text>
+  <text class="zzz" style="animation-delay:1s" x="400" y="230" font-size="52" font-weight="800" fill="#ffd76a">Z</text>`},
+ {text:'Eines Tages kam der weise Sissa an den Hof. Er brachte ein neues Spiel mit, das er selbst erfunden hatte: das Schachspiel!',
+  say:[{w:'n',t:'Eines Tages kam der weise Sissa an den Hof. Er brachte ein neues Spiel mit, das er selbst erfunden hatte: das Schachspiel!'},{w:'s',t:'Majestät, ich habe ein Spiel für Euch!'}],
+  svg:()=>`${hall()}${throne(300)}${king(300,450,'neutral')}
+  <g class="walkIn"><g>${sissa(860,450,true)}</g></g>
+  ${bubble(600,30,440,110,'Majestät, ich habe ein Spiel für Euch!',830,205,'pop d4',1)}`},
+ {text:'Der König spielte Tag und Nacht. Er war so begeistert, dass er Sissa reich belohnen wollte.',
+  say:[{w:'n',t:'Der König spielte Tag und Nacht. Er war so begeistert, dass er Sissa reich belohnen wollte.'},{w:'k',t:'Was für ein großartiges Spiel! Wünsch dir eine Belohnung – egal was!'}],
+  svg:()=>`${hall()}${throne(250)}${king(250,450,'happy')}
+  <rect x="490" y="345" width="220" height="18" rx="6" fill="#8a5a33"/><rect x="510" y="363" width="16" height="87" fill="#6b3e1f"/><rect x="674" y="363" width="16" height="87" fill="#6b3e1f"/>
+  <g transform="translate(540,300) scale(1,.42)">${miniBoard(0,0,120)}</g>
+  ${sissa(930,450)}
+  ${bubble(360,20,470,140,'Was für ein großartiges Spiel! Wünsch dir eine Belohnung – egal was!',300,215,'pop d1',1)}`},
+ {text:'Sissa verbeugte sich: „Legt 1 Reiskorn auf das 1. Feld, 2 auf das 2., 4 auf das 3. Feld – auf jedes Feld immer doppelt so viele wie auf das davor. Bis alle 64 Felder belegt sind.“',
+  say:[{w:'n',t:'Sissa verbeugte sich und sprach:'},{w:'s',t:'Legt ein Reiskorn auf das erste Feld. Zwei Körner auf das zweite Feld. Vier auf das dritte Feld. Auf jedes Feld immer doppelt so viele wie auf das Feld davor. Bis alle 64 Felder belegt sind.'}],
+  svg:()=>{
+   const c=118,x0=128,y0=250;let b='';
+   for(let i=0;i<2;i++)for(let j=0;j<8;j++)b+=`<rect x="${x0+j*c}" y="${y0+i*c}" width="${c}" height="${c}" fill="${(i+j)%2?'#b58863':'#f0d9b5'}"/>`;
+   const r=rnd(3);let g='',lab='';
+   [1,2,4,8].forEach((cnt,f)=>{
+     const start=0.8+f*1.3;
+     for(let k=0;k<cnt;k++){const cols=cnt<=2?cnt:(cnt===4?2:4);const rows=Math.ceil(cnt/cols);
+       const cx=x0+f*c+c/2+((k%cols)-(cols-1)/2)*24;const cy=y0+c/2-6+(Math.floor(k/cols)-(rows-1)/2)*20;
+       g+=grain(cx.toFixed(1),cy.toFixed(1),Math.round(r()*160),'drop',(start+k*.12).toFixed(2));}
+     lab+=`<text class="pop" style="animation-delay:${(start+cnt*.12+.3).toFixed(2)}s" x="${x0+f*c+c/2}" y="${y0+c-12}" text-anchor="middle" font-size="26" font-weight="800" fill="#231d45">${cnt}</text>`;
+     if(f<3)lab+=`<text class="pop" style="animation-delay:${(start+cnt*.12+.6).toFixed(2)}s" x="${x0+(f+1)*c}" y="${y0-14}" text-anchor="middle" font-size="26" font-weight="800" fill="#ffd76a">·2</text>`;
+   });
+   for(let f=4;f<8;f++)lab+=`<text class="pop" style="animation-delay:${(6.4+(f-4)*.25).toFixed(2)}s" x="${x0+f*c+c/2}" y="${y0+c/2+20}" text-anchor="middle" font-size="60" font-weight="800" fill="#c8423b">?</text>`;
+   return `<rect width="1200" height="560" fill="#1b1545"/>${stars(30,560)}
+   <text x="600" y="80" text-anchor="middle" font-size="44" font-weight="800" fill="#ffd76a" class="fade">Sissas Wunsch</text>
+   <text x="600" y="130" text-anchor="middle" font-size="28" font-weight="600" fill="#d9d2ff" class="fade d1">Feld 1 · Feld 2 · Feld 3 · Feld 4 · …</text>
+   <g>${b}<rect x="${x0}" y="${y0}" width="${c*8}" height="${c*2}" fill="none" stroke="#6b3e1f" stroke-width="8"/></g><g data-line="1">${g}${lab}</g>`;}},
+ {text:'Der König lachte laut. „So ein bescheidener Wunsch!“ Doch Sissa lächelte nur still … Was meint ihr: Ist das ein guter Deal für den König?',
+  say:[{w:'n',t:'Der König lachte laut.'},{w:'k',t:'Ha, ha! Nur ein paar Reiskörner? Den Wunsch erfülle ich dir sofort!'},{w:'n',t:'Doch Sissa lächelte nur still … Was meint ihr: Ist das ein guter Deal für den König?'}],
+  svg:()=>`${hall()}${throne(300)}<g class="bounce">${king(300,450,'laugh')}</g>${sissa(900,450)}
+  ${bubble(420,20,470,140,'Ha, ha! Nur ein paar Reiskörner? Den Wunsch erfülle ich dir sofort!',350,215,'pop d1',1)}
+  <text class="pop d4" data-line="2" x="930" y="120" text-anchor="middle" font-size="80" font-weight="800" fill="#ffd76a">?</text>`}
+];
+
+/* ---------- Szenen: Ende ---------- */
+const ENDE=[
+ {text:'Am nächsten Morgen rief der König seinen Rechenmeister. Der rechnete und rechnete …',
+  say:[{w:'n',t:'Am nächsten Morgen rief der König seinen Rechenmeister.'},{w:'k',t:'Rechne aus, wie viel Reis Sissa bekommt!'},{w:'r',t:'Sehr wohl, Majestät! Ich rechne sofort.'},{w:'n',t:'Und der Rechenmeister rechnete und rechnete …'}],
+  svg:()=>`${hall()}${throne(250)}${king(250,450,'neutral')}
+  ${scribe(830,450)}
+  <rect x="690" y="330" width="280" height="18" rx="5" fill="#8a5a33"/><rect x="705" y="348" width="250" height="102" fill="#6b3e1f"/>
+  <g class="unroll d5" data-line="3">${scrollSVG(745,345,170,200,['1','+ 2','+ 4','+ 8','+ 16','+ 32','+ 64','+ …'])}</g>
+  ${bubble(40,20,440,110,'Rechne aus, wie viel Reis Sissa bekommt!',270,200,'pop d1',1)}
+  ${bubble(640,20,440,110,'Sehr wohl, Majestät! Ich rechne sofort.',830,205,'pop d4',2)}`},
+ {text:'Die Diener schleppten Sack um Sack aus der Vorratskammer. Doch schon bald war die Kammer leer – und das Schachbrett noch lange nicht voll!',
+  say:[{w:'n',t:'Die Diener schleppten Sack um Sack aus der Vorratskammer.'},{w:'n',t:'Doch schon bald war die Kammer leer – und das Schachbrett noch lange nicht voll!'}],
+  svg:()=>{
+   const pos=[[455,450],[525,450],[595,450],[665,450],[490,388],[560,388],[630,388],[525,326],[595,326],[560,264]];
+   let pile=pos.map(([x,y],i)=>`<g class="pop" style="animation-delay:${(.3*i+.2).toFixed(1)}s">${sack(x,y)}</g>`).join('');
+   const c=300/8;let cells='';for(let n=1;n<=22;n++){const r=Math.floor((n-1)/8),k=(n-1)%8;cells+=`<rect class="fade" style="animation-delay:${(.3+n*.17).toFixed(2)}s" x="${800+k*c}" y="${140+r*c}" width="${c}" height="${c}" fill="#eeae22" opacity=".85"/>`}
+   return `${hall()}
+   <path d="M110 450 V250 Q235 130 360 250 V450Z" fill="#2a1a12" stroke="#eeae22" stroke-width="6"/>
+   <rect x="140" y="112" width="190" height="44" rx="8" fill="#eeae22"/><text x="235" y="142" text-anchor="middle" font-size="24" font-weight="800" fill="#231d45">Vorratskammer</text>
+   <g class="vanish" style="animation-delay:1s">${sack(185,450,.9)}${sack(260,450,.9)}${sack(222,392,.9)}${sack(300,450,.9)}</g>
+   ${pile}
+   <g>${miniBoard(800,140,300)}${cells}</g>
+   <text class="pop" style="animation-delay:4.2s" x="950" y="485" text-anchor="middle" font-size="30" font-weight="800" fill="#ffd76a">erst Feld 22 von 64 …</text>
+   <g class="stamp" style="animation-delay:4.8s" data-line="1" transform="rotate(-12 235 340)"><rect x="140" y="305" width="190" height="72" rx="10" fill="#2a1a12" stroke="#c8423b" stroke-width="8"/><text x="235" y="358" text-anchor="middle" font-size="50" font-weight="800" fill="#c8423b">LEER!</text></g>`;}},
+ {text:'Nach vielen Tagen kam der Rechenmeister zitternd zum König.',
+  say:[{w:'n',t:'Nach vielen Tagen kam der Rechenmeister zitternd zum König.'},{w:'r',t:'Majestät … so viel Reis gibt es nicht im ganzen Königreich. Nicht einmal auf der ganzen Welt!'},{w:'k',t:'Waaas?!'}],
+  svg:()=>`${hall()}${throne(280)}<g class="shake" data-line="2">${king(280,450,'shock')}</g>
+  ${scribe(880,450,'worried')}
+  <g transform="rotate(-4 740 360)">${scrollSVG(670,270,135,190,['+ 2.048','+ 4.096','+ 8.192','+ 16.384','+ …','= ???'],19)}</g>
+  ${bubble(540,15,560,150,'Majestät … so viel Reis gibt es nicht im ganzen Königreich. Nicht einmal auf der ganzen Welt!',870,205,'pop d1',1)}
+  ${bubble(20,60,230,90,'Waaas?!',222,232,'pop d5',2)}`},
+ {text:'Über 18 Trillionen Reiskörner – so viel Reis erntet die ganze Welt in etwa 900 Jahren! Ein Güterzug mit all dem Reis wäre über 100 Millionen Kilometer lang. Er würde fast bis zur Sonne reichen.',
+  say:[{w:'n',t:'Über 18 Trillionen Reiskörner! So viel Reis erntet die ganze Welt in etwa 900 Jahren.'},{w:'n',t:'Ein Güterzug mit all dem Reis wäre über 100 Millionen Kilometer lang.'},{w:'n',t:'Er würde fast bis zur Sonne reichen!'}],
+  svg:()=>`<defs><pattern id="wag" width="24" height="20" patternUnits="userSpaceOnUse"><rect x="1" y="0" width="21" height="13" rx="2" fill="#c9a46a" stroke="#8a6a3a"/><circle cx="6" cy="16" r="3" fill="#ddd"/><circle cx="17" cy="16" r="3" fill="#ddd"/></pattern>
+   <radialGradient id="glow"><stop offset=".6" stop-color="#ffb300" stop-opacity=".45"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient><radialGradient id="sunG"><stop offset=".6" stop-color="#ffd23f"/><stop offset="1" stop-color="#ff9d00"/></radialGradient></defs>
+  <rect width="1200" height="560" fill="#0a0820"/>${stars(90,560,5)}
+  <circle cx="1270" cy="330" r="330" fill="url(#glow)"/><circle cx="1270" cy="330" r="230" fill="url(#sunG)"/>
+  <text x="1120" y="345" text-anchor="middle" font-size="34" font-weight="800" fill="#7a3f00">Sonne</text>
+  <circle cx="150" cy="330" r="62" fill="#2f7fd6"/><path d="M118 296 q22 -22 44 0 q10 22 -10 32 q-26 6 -34 -32z" fill="#3fa34d"/><path d="M162 345 q26 -6 32 20 q-16 22 -38 6z" fill="#3fa34d"/><path d="M100 350 q10 10 25 5" stroke="#3fa34d" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <text x="150" y="425" text-anchor="middle" font-size="28" font-weight="800" fill="#d9d2ff">Erde</text>
+  <text class="pop d1" x="600" y="95" text-anchor="middle" font-size="56" font-weight="800" fill="#ffd76a">18.446.744.073.709.551.615</text>
+  <text class="fade d2" x="600" y="140" text-anchor="middle" font-size="28" font-weight="700" fill="#d9d2ff">Reiskörner ≈ 900 Jahre Welt-Reisernte</text>
+  <line x1="214" y1="352" x2="1040" y2="352" stroke="#4a4570" stroke-width="3" stroke-dasharray="8 6"/>
+  <g class="grow d3" data-line="1"><rect x="214" y="330" width="636" height="20" fill="url(#wag)"/></g>
+  <text class="pop" style="animation-delay:7.5s" data-line="2" x="870" y="352" font-size="40">🚂</text>
+  <text class="pop" style="animation-delay:8s" data-line="2" x="540" y="300" text-anchor="middle" font-size="30" font-weight="800" fill="#fff">über 100 Millionen km – fast bis zur Sonne!</text>
+  <text x="1190" y="548" text-anchor="end" font-size="16" fill="#8a84b0">ca.-Werte: 1 Korn ≈ 0,025 g · Waggon ≈ 50 t und 15 m</text>`},
+ {text:'Der König erkannte, wie klug Sissa war, und machte ihn zu seinem ersten Berater. Die Moral: Wer immer wieder verdoppelt, kommt ganz schnell zu riesigen Zahlen!',
+  say:[{w:'n',t:'Da musste der König lachen. Er erkannte, wie klug Sissa war.'},{w:'k',t:'Sissa, du bist wirklich weise! Ab heute bist du mein erster Berater.'},{w:'n',t:'Und die Moral der Geschichte: Wer immer wieder verdoppelt, kommt ganz schnell zu riesigen Zahlen!'}],
+  svg:()=>`${hall()}${throne(300)}${king(300,450,'happy')}${sissa(880,450)}
+  <g class="pop d2" data-line="1"><path d="M846 292 Q880 352 914 292" stroke="#ffd76a" stroke-width="7" fill="none"/><circle cx="880" cy="345" r="15" fill="#ffd76a" stroke="#b07c10" stroke-width="3"/><circle cx="880" cy="345" r="5" fill="#c8423b"/></g>
+  <g data-line="2">${confetti(50)}</g>
+  ${bubble(420,20,500,140,'Sissa, du bist wirklich weise! Ab heute bist du mein erster Berater.',330,215,'pop d1',1)}
+  <g data-line="2"><g class="pop d4"><rect x="300" y="470" width="600" height="70" rx="20" fill="#eeae22"/><text x="600" y="517" text-anchor="middle" font-size="34" font-weight="800" fill="#231d45">Immer wieder ·2 → riesige Zahlen!</text></g></g>`}
+];
+players.intro=Player('intro',INTRO,{finish:'Zur Vermutung ▶',onFinish:()=>go(1)});
+players.ende=Player('ende',ENDE,{finish:'Zum Merksatz ▶',onFinish:()=>go(6)});
+
+/* ================= VERMUTUNG ================= */
+const Q1=[{k:'a',t:'Ja – das sind doch nur ein paar Körner.',s:'Ja – nur ein paar Körner'},{k:'b',t:'Nein – das wird für den König sehr teuer.',s:'Nein – sehr teuer',ok:true}];
+const Q2=[{k:'a',t:'eine Schüssel voll'},{k:'b',t:'ein großer Sack voll'},{k:'c',t:'eine LKW-Ladung'},{k:'d',t:'ein riesiges Frachtschiff voll',s:'ein Frachtschiff voll'},{k:'e',t:'mehr, als auf der ganzen Welt wächst',s:'mehr als die ganze Welt',ok:true}];
+const votes={q1:Q1.map(()=>0),q2:Q2.map(()=>0)};
+function buildOpts(id,arr){
+  const el=$('#'+id);el.innerHTML='<div class="vhead"><span></span><span>Antwort</span><span style="text-align:center">Stimmen</span></div>';
+  arr.forEach((o,i)=>{const d=document.createElement('div');d.className='vopt';
+    d.innerHTML=`<span class="vl">${o.k})</span><span>${o.t}</span><input class="vin" type="number" min="0" max="99" inputmode="numeric" placeholder="–" aria-label="Stimmen: ${o.t}">`;
+    const inp=d.querySelector('input');
+    inp.oninput=()=>{votes[id][i]=Math.max(0,Math.min(99,parseInt(inp.value)||0))};
+    inp.onfocus=()=>inp.select();
+    inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const all=$$('.vin');const n=all[all.indexOf(inp)+1];if(n)n.focus();else inp.blur()}};
+    el.appendChild(d);});
+}
+buildOpts('q1',Q1);buildOpts('q2',Q2);
+let timerInt=null;
+$('#timerBtn').onclick=()=>{
+  const b=$('#timerBtn');if(timerInt){clearInterval(timerInt);timerInt=null;b.textContent='Timer 0:30';return}
+  let s=30;const upd=()=>{b.textContent=`Timer 0:${String(s).padStart(2,'0')}`};upd();
+  timerInt=setInterval(()=>{s--;if(s<=0){clearInterval(timerInt);timerInt=null;b.textContent='Zeit um!';setTimeout(()=>b.textContent='Timer 0:30',4000);return}upd()},1000);
+};
+function renderBars(){$('#vBars').innerHTML='';$('#vShow').style.display='';$('#vShow').disabled=false}
+function showBars(){
+  const sum=a=>a.reduce((x,y)=>x+y,0);
+  if(sum(votes.q1)+sum(votes.q2)===0){$('#vBars').innerHTML='<span class="vn">Es wurden noch keine Stimmen eingetragen (Seite 2 – Vermutung).</span>';return}
+  $('#vShow').style.display='none';
+  let d=0,html='';
+  const block=(title,arr,v)=>{html+=`<div class="bh" style="animation-delay:${d}s">${title}</div>`;d+=.15;
+    arr.forEach((o,i)=>{html+=`<div class="bar" data-ok="${o.ok?1:0}" data-p="${v[i]/(sum(v)||1)*100}" data-v="${v[i]}" style="animation-delay:${d.toFixed(2)}s"><span>${o.k}) ${o.s||o.t}<span class="ck">✓</span></span><div class="tr"><div class="fl"></div></div><b>0</b></div>`;d+=.12})};
+  block('Frage A: Ist das ein guter Deal für den König?',Q1,votes.q1);d+=.1;block('Frage B: Wie viel Reis?',Q2,votes.q2);
+  $('#vBars').innerHTML=html;
+  const bars=$$('#vBars .bar');
+  bars.forEach((el,i)=>{const delay=(parseFloat(el.style.animationDelay)+.35)*1000;
+    setTimeout(()=>{el.querySelector('.fl').style.width=el.dataset.p+'%';
+      const tgt=+el.dataset.v,b=el.querySelector('b'),t0=performance.now();
+      const step=t=>{const k=Math.min(1,(t-t0)/1000);b.textContent=Math.round(tgt*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)},delay)});
+  const end=(d+1.6)*1000;
+  setTimeout(()=>bars.forEach(el=>{if(el.dataset.ok==='1')el.classList.add('win')}),end);
+}
+
+/* ================= SCHACHBRETT ================= */
+const boardEl=$('#board');
+for(let n=1;n<=64;n++){const r=Math.floor((n-1)/8),c=(n-1)%8;const d=document.createElement('div');d.className='cell '+((r+c)%2?'d':'l');d.dataset.n=n;d.onclick=()=>{if(n===filled+1)next()};boardEl.appendChild(d)}
+let filled=0,pending=false,anim=null;
+function cellHTML(n){const g=grains(n);return `<span class="num">${n}</span><span class="cp">2<sup>${n-1}</sup></span><span class="cv">${n<=14?fmt(g):word(Number(g),true)}</span>`}
+function render(changed){
+  [...boardEl.children].forEach(el=>{const n=+el.dataset.n;
+    const st=n<=filled?(n===filled&&!pending?'c':'f'):(pending&&n===filled+1?'a':(n===filled+1?'x':'e'));
+    if(el.dataset.state===st&&changed!==n)return;el.dataset.state=st;
+    el.classList.remove('filled','ask','next','new','cur');
+    if(st==='f'||st==='c'){el.classList.add('filled');if(st==='c')el.classList.add('cur');if(el.dataset.html!=='1'||changed===n){el.innerHTML=cellHTML(n);el.dataset.html='1'}if(changed===n)el.classList.add('new')}
+    else{el.dataset.html='';el.innerHTML=`<span class="num">${n}</span>`;if(st==='a')el.classList.add('ask');if(st==='x')el.classList.add('next')}
+  });
+  const f=pending?filled+1:filled;
+  const setBig=html=>{$('#pBig').innerHTML=html?`<span class="fit">${html}</span>`:''};
+  if(f===0){$('#pTitle').textContent='Start';setBig('');$('#pCalc').innerHTML='<span class="note">„Nächstes Feld“ oder Feld 1 antippen.</span>'}
+  else if(pending){$('#pTitle').textContent=`Feld ${f}`;setBig(`<span class="pw">2<sup>${f-1}</sup></span> = ?`);
+    $('#pCalc').innerHTML=f===1?'<span class="note">Wie viele Körner liegen auf Feld 1?</span>':`<span class="note">Feld ${f-1}: ${fmt(grains(f-1))} Körner. Wie viele sind es auf Feld ${f}?</span>`}
+  else{const g=grains(f),e=f-1;$('#pTitle').textContent=`Feld ${f}`;
+    setBig(`<span class="pw">2<sup>${e}</sup></span> = ${fmt(g)}`);
+    let h='';
+    if(f===1)h=`<span class="note">2<sup>0</sup> = 1 – Vereinbarung: das Startkorn</span>`;
+    else{h=`<span class="lab">als Produkt (${e} ${e===1?'Faktor':'Faktoren'})</span><span class="cl fit">2<sup>${e}</sup> = ${e<=6?Array(e).fill('2').join(' · '):'2 · 2 · 2 · … · 2'}</span>`;
+      h+=`<span class="lab">verdoppelt</span><span class="cl fit">${fmt(grains(f-1))} · 2 = ${fmt(g)}</span>`;
+      if(f>=21)h+=`<span class="note">in Worten: ca. ${word(Number(g))}</span>`}
+    $('#pCalc').innerHTML=h}
+  fitAll();
+  const T=total(filled),Tn=Number(T);
+  $('#pTotal').textContent=fmt(T);$('#pTotalW').textContent=Tn>=1e6?'≈ '+word(Tn):'\u00a0';
+  $('#pWeight').textContent=weight(Tn*GRAM);
+  $('#pCompare').innerHTML=compareText(Tn*GRAM).t.replace(/^Das sind ungefähr /,'').replace(/\.$/,'');
+  $('#bNext').textContent=pending?'Aufdecken':(filled>=64?'Weiter zum Muster ▶':'Nächstes Feld ▶');
+  $('#tPredict').parentElement.style.display=filled>=64?'none':'';
+}
+function fitAll(){$$('#brett .fit').forEach(el=>{el.style.fontSize='';if(!el.clientWidth)return;let fs=parseFloat(getComputedStyle(el).fontSize),k=0;while(el.scrollWidth>el.clientWidth+1&&fs>12&&k<60){fs*=.94;el.style.fontSize=fs+'px';k++}})}
+window.addEventListener('resize',fitAll);
+function next(){if(anim)return;if(filled>=64&&!pending){go(3);return}if(pending){pending=false;filled++;render(filled);return}if(filled>=64)return;if($('#tPredict').checked){pending=true;render()}else{filled++;render(filled)}}
+$('#bNext').onclick=next;
+$('#bUndo').onclick=()=>{if(anim)return;if(pending)pending=false;else if(filled>0)filled--;render()};
+$('#bRow').onclick=()=>{if(anim||filled>=64)return;pending=false;runTo(Math.min(64,Math.ceil((filled+1)/8)*8),140)};
+$('#bAll').onclick=()=>{if(anim||filled>=64)return;pending=false;runTo(64,70)};
+$('#bReset').onclick=()=>{if(anim){clearInterval(anim);anim=null}filled=0;pending=false;render()};
+$('#tPredict').onchange=()=>{if(!$('#tPredict').checked&&pending){pending=false;filled++;render(filled)}else render()};
+function runTo(to,ms){anim=setInterval(()=>{if(filled>=to){clearInterval(anim);anim=null;render();return}filled++;render(filled)},ms)}
+function sizeBoard(){const w=boardEl.clientWidth;if(w)boardEl.style.setProperty('--cell',(w/8)+'px')}
+try{new ResizeObserver(sizeBoard).observe(boardEl)}catch(e){window.addEventListener('resize',sizeBoard)}
+render();
+
+/* ================= MUSTER: Zweier-Kette ================= */
+let kn=4,kTok=0,kCounted=false;const heft=new Set();
+const CHIPS=[1,2,3,4,5,6,7,8,9,10,16,20,32,64];
+$('#kChips').innerHTML=CHIPS.map(n=>`<button class="chip" data-k="${n}">${n}</button>`).join('');
+$$('#kChips .chip').forEach(b=>b.onclick=()=>{kn=+b.dataset.k;kRender()});
+$('#kPrev').onclick=()=>{if(kn>1){kn--;kRender()}};$('#kNext').onclick=()=>{if(kn<64){kn++;kRender()}};
+$('#kAgain').onclick=()=>kRender();
+function kRender(){
+  kTok++;kCounted=false;const k=kn-1;
+  $('#kN').textContent=kn;$$('#kChips .chip').forEach(b=>b.classList.toggle('on',+b.dataset.k===kn));
+  $('#kVal').textContent=fmt(grains(kn));
+  const ch=$('#kChain');ch.classList.remove('gone');ch.dataset.sz=k<=10?'l':k<=24?'m':'s';
+  ch.innerHTML=k===0?`<div class="startnote">🌾 Feld 1 ist das <b>Startkorn</b>.<br>Hier wurde noch <b>nie</b> verdoppelt – es gibt noch <b>keine einzige 2</b>.</div>`
+    :Array.from({length:k},(_,j)=>`<span class="t">2</span>${j<k-1?'<span class="dotm">·</span>':''}`).join('')+`<span class="eqv">= ${fmt(grains(kn))}</span>`;
+  $('#kCounter').textContent='';
+  $('#kRes').innerHTML=k===0?'':`<span style="color:var(--muted);font-weight:600">Wie viele Zweien werden hier multipliziert? Erst schätzen, dann zählen!</span>`;
+  $('#kCount').disabled=false;$('#kShort').disabled=false;
+}
+async function kCount(){
+  const tk=kTok,ts=[...$$('#kChain .t')];
+  ts.forEach(t=>{t.classList.remove('on');const b=t.querySelector('.badge');if(b)b.remove()});
+  if(!ts.length){$('#kCounter').textContent='0 Zweien';kCounted=true;return}
+  const sp=ts.length>30?70:ts.length>12?150:420;
+  for(let j=0;j<ts.length;j++){if(tk!==kTok)return false;ts[j].classList.add('on');ts[j].insertAdjacentHTML('beforeend',`<span class="badge">${j+1}</span>`);$('#kCounter').textContent=`${j+1} ${j===0?'Zwei':'Zweien'}`;await sleep(sp)}
+  kCounted=true;return true;
+}
+$('#kCount').onclick=async()=>{$('#kCount').disabled=true;await kCount();$('#kCount').disabled=false};
+$('#kShort').onclick=async()=>{
+  const tk=kTok;$('#kShort').disabled=true;$('#kCount').disabled=true;
+  if(!kCounted){const ok=await kCount();if(ok===false||tk!==kTok)return}
+  await sleep(350);if(tk!==kTok)return;
+  const k=kn-1,ch=$('#kChain'),ts=[...$$('#kChain .t')];ch.classList.add('gone');
+  const step=Math.min(70,1100/Math.max(1,ts.length));ts.forEach((t,j)=>{t.style.animationDelay=(j*step)+'ms';t.classList.add('fly')});
+  await sleep(ts.length*step+500);if(tk!==kTok)return;
+  ch.dataset.sz='l';ch.innerHTML=`<div class="kpow"><span class="b">2</span><sup>${k}</sup></div><div class="kpowv">= ${fmt(grains(kn))}</div>`;
+  $('#kRes').innerHTML=k===0?`Feld 1: keine 2 → man schreibt <b>2<sup>0</sup> = 1</b> (das ist eine Vereinbarung).`
+    :`<div><span class="lb">Basis 2</span>: diese Zahl wird multipliziert. &nbsp; <span class="le">Exponent ${k}</span>: so viele Zweien waren es.<br>Sprich: „2 hoch ${k}“</div>`;
+  heft.add(kn);renderHeft();
+};
+function renderHeft(){
+  const a=[...heft].sort((x,y)=>x-y);
+  $('#kList').innerHTML=a.length?a.map(n=>`<div class="hrow"><span class="hf">Feld <b>${n}</b></span><span>→</span><span class="hp">2<sup>${n-1}</sup></span><span class="hv">= ${n<=30?fmt(grains(n)):word(Number(grains(n)))}</span></div>`).join('')
+    :'<div class="hempty">Noch leer. Wählt ein Feld und tippt auf „✨ Kürzer schreiben“ – dann wird es hier eingetragen.</div>';
+}
+kRender();renderHeft();
+
+/* ================= AUFLÖSUNG ================= */
+$('#vShow').onclick=showBars;
+$('#hugeBtn').onclick=()=>{
+  const s=fmt(total(64)),el=$('#hugeNum');el.textContent='';let i=0;$('#hugeBtn').disabled=true;
+  const t=setInterval(()=>{el.textContent=s.slice(0,++i);if(i>=s.length){clearInterval(t);$('#hugeInfo').style.display='block';el.insertAdjacentHTML('beforeend',' <span style="font-size:.45em;color:var(--ink)">Körner</span>')}},90);
+};
+
+/* ================= LEHRKRAFT ================= */
+const NOTES={
+ intro:['Drei Schüler:innen lesen vor: Erzähler, König, Sissa. Jede Zeile hat ein farbiges Rollen-Schild.','Mit „Weiter“, Leertaste oder → erscheint die nächste Zeile – erst dann bewegt sich das Bild passend dazu. So bleibt Zeit zum Lesen.','In der Szene „Sissas Wunsch“ innehalten: „Was kommt auf Feld 5?“ (16) – erstes Erkennen der Regel „·2“.','◀ geht eine Zeile zurück.'],
+ vermutung:['Jede:r überlegt allein (Timer 30 Sekunden), ohne Austausch.','Handzeichen zählen und die Zahl ins Feld tippen; Enter springt zum nächsten Feld.','Bewusst noch nicht auflösen – die Ergebnisse erscheinen in der Auflösung.'],
+ brett:['Jedes Feld zeigt Potenz und Ergebnis; rechts stehen Produkt und Verdopplung. ','Optional „Vor dem Aufdecken vermuten lassen“ einschalten: Die Klasse nennt die Zahl, bevor sie erscheint.','Ab Reihe 2 mit „Reihe füllen“ / „Alle füllen“ beschleunigen. Leertaste = nächstes Feld.'],
+ muster:['① Zweier-Kette: Feld wählen → Klasse schätzt die Anzahl der Zweien → „Zählen“ (laut mitzählen) → „Kürzer schreiben“: Die Kette schrumpft zur Potenz.','Mehrere Felder (z. B. 3, 4, 5, 10) durchgehen – das Forscherheft füllt sich, die Farben (blau/rot) machen den Zusammenhang Feldnummer ↔ Exponent sichtbar.','2⁰ = 1 nur als Vereinbarung nennen, nicht vertiefen.'],
+ aufloesung:['Mit den Vermutungen vergleichen: Wer lag richtig? Warum unterschätzen wir Verdopplung?','Kontrast „immer +1“ (2.080 Körner) vs. „immer ·2“ herausarbeiten.','Größenangaben sind gerundete Schätzwerte (1 Korn ≈ 0,025 g).'],
+ ende:['Dieselben drei Vorlesenden; den Rechenmeister liest der Erzähler mit.','Zeile für Zeile mit Weiter / Leertaste.','Die Werte (900 Jahre Welternte, Güterzug fast bis zur Sonne) sind gerundete Schätzwerte.'],
+ merke:['Merksatz und Beispiel ins Heft übernehmen; Basis, Exponent, Potenzwert farbig markieren.','Typische Fehlvorstellung 2³ = 6 ausdrücklich besprechen.']
+};
+$('#notesBtn').onclick=()=>{
+  $('#mTitle').textContent='Hinweise: '+NAMES[cur];
+  $('#mBody').innerHTML='<ul>'+NOTES[PAGES[cur]].map(x=>`<li>${x}</li>`).join('')+'</ul>';
+  $('#modal').classList.add('open');
+};
+$('#mClose').onclick=()=>$('#modal').classList.remove('open');
+$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').classList.remove('open')};
+
+/* ================= TASTATUR ================= */
+document.addEventListener('keydown',e=>{
+  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
+  if($('#modal').classList.contains('open')){if(e.key==='Escape')$('#modal').classList.remove('open');return}
+  const fwd=['ArrowRight','PageDown'].includes(e.key),back=['ArrowLeft','PageUp'].includes(e.key),p=players[PAGES[cur]];
+  if(p){if(fwd||e.key===' '||e.key==='Enter'){e.preventDefault();p.next()}if(back)p.prev();return}
+  if(PAGES[cur]==='brett'&&(e.key===' '||e.key==='Enter')){e.preventDefault();next();return}
+  if(fwd)go(cur+1);if(back)go(cur-1);
+});
+go(0);
+</script>
+</body>
+</html>
