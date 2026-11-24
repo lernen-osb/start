@@ -27,6 +27,35 @@ h1{margin:10px 0 40px;font-size:clamp(40px,6.6vw,68px);line-height:1.05;font-wei
 .lead{margin:14px 0 40px;font-size:clamp(19px,2.2vw,22px);color:var(--grau);max-width:660px}
 .lead b{color:var(--blau)}
 
+/* Hervorgehoben */
+#oben:empty{display:none}
+#oben{display:grid;gap:18px;margin-bottom:28px}
+.hl{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:var(--blau);color:#fff;border-radius:26px;padding:28px 30px;cursor:pointer;box-shadow:0 16px 36px rgba(0,113,227,.25);animation:rein .5s var(--ease) backwards;transition:transform .25s var(--ease)}
+.hlicon{width:68px;height:68px;border-radius:18px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff}
+.hlicon svg{width:36px;height:36px}
+.hlkick{font-size:15px;color:#CFE3FA}
+.hl h2{margin:4px 0 0;font-size:clamp(26px,3.6vw,36px);font-weight:700;letter-spacing:-.01em}
+.hl p{margin:6px 0 0;font-size:18px;color:#CFE3FA}
+.hl .qrbtn{background:rgba(255,255,255,.16);color:#fff}
+.hl .start{background:#fff;color:var(--blau)}
+.hl.fehlt{pointer-events:none;opacity:.6}
+.hl>span{min-width:0}
+.hl h2{overflow-wrap:anywhere;hyphens:auto}
+
+/* Adventsstil: rot mit blinkender Lichterkette */
+.advent{position:relative;padding:22px}
+.advent .hl{position:relative;z-index:1;background:linear-gradient(135deg,#D70015 0%,#B0001A 100%);box-shadow:0 16px 36px rgba(215,0,21,.3)}
+.advent .hlkick,.advent .hl p{color:#FFD9DE}
+.advent .hlicon{background:rgba(255,255,255,.18)}
+.advent .hl .start{color:#D70015}
+.kette{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2}
+.kette .draht{fill:none;stroke:#2F4A33;stroke-width:2;stroke-linecap:round}
+.kette .fassung{fill:#2F4A33}
+.kette .glow{opacity:.55}
+.kette .an{animation:blink 1.6s ease-in-out infinite}
+.kette .g1{animation-delay:-.53s}.kette .g2{animation-delay:-1.07s}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.18}}
+
 /* Fächer (aufklappbar) */
 .fach{background:var(--hell);border-radius:26px;margin-bottom:18px}
 .fkopf{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;border:0;background:none;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:24px 28px;border-radius:26px}
@@ -87,6 +116,10 @@ h2{margin:2px 0 0;font-size:clamp(24px,3vw,32px);font-weight:700}
   .card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.08)}
   .card:hover .start{background:#0077ED}
   .qrbtn:hover{background:var(--hell2)}
+  .hl:hover{transform:translateY(-2px)}
+  .hl .qrbtn:hover{background:rgba(255,255,255,.28)}
+  .hl:hover .start{background:#F5F5F7}
+  .advent .hl:hover .start{background:#FFF0F2}
 }
 
 footer{margin-top:40px;font-size:15px;color:var(--grau)}
@@ -104,6 +137,9 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
   .icon{width:50px;height:50px;font-size:25px;border-radius:14px}
   .icon svg{width:26px;height:26px}
   .aktionen{grid-column:1/-1}
+  .hl{gap:16px;padding:22px}
+  .hlicon{width:54px;height:54px;border-radius:15px}
+  .hlicon svg{width:28px;height:28px}
   .start{flex:1}
 }
 /* QR-Fenster */
@@ -121,7 +157,7 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
 .qrknoepfe .zweit{background:var(--hell);color:var(--text)}
 .qrknoepfe .haupt{background:var(--blau);color:#fff}
 .qrknoepfe a:focus-visible,.qrknoepfe button:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){ .card,.leer{animation:none} .fbody,.pfeil,.klassen button,.card,.qrmodal,.qrbox{transition:none!important} }
+@media (prefers-reduced-motion:reduce){ .card,.leer{animation:none} .fbody,.pfeil,.klassen button,.card,.qrmodal,.qrbox{transition:none!important} .kette .an{animation:none} }
 </style>
 </head>
 <body>
@@ -132,6 +168,7 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
   </div>
   <h1>Mathematik und Informatik</h1>
 
+  <div id="oben"></div>
   <div id="faecher"></div>
 
 </div>
@@ -158,7 +195,7 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
      { titel: "…", text: "…", datei: "dateiname.html", icon: "schloss", thema: "…" }
    - icon: eines dieser Symbole (Name in Anführungszeichen):
        schach, schloss, binaer, code, computer, chip, wlan, schild,
-       rechnen, teilen, geometrie, diagramm, buch, spiel, idee, stern, datei
+       rechnen, teilen, geometrie, diagramm, buch, spiel, idee, stern, geschenk, datei
      (ein Emoji wie "🎲" geht weiterhin auch)
    - datei: genau so geschrieben wie auf GitHub (Groß-/Kleinschreibung!)
    - icon und thema dürfen auch weggelassen werden
@@ -166,6 +203,16 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
    - eine neue Klasse anlegen:  "Klasse 6": [],
    Leere Klassen zeigen automatisch „Hier kommt bald etwas“.
    ===================================================================== */
+/* ---- Hervorgehoben: große blaue Kachel ganz oben ----
+   Zum Ausblenden alles zwischen [ und ] löschen, also:  var OBEN = [];
+   stil: "advent" = rot mit Lichterkette, ohne QR-Knopf. Ohne stil: blau mit QR-Knopf. */
+var OBEN = [
+  { kicker: "Mathematik · Dezember",
+    titel:  "Matheadventskalender",
+    text:   "Jeden Tag ein neues Türchen.",
+    datei:  "matheadvent.html", icon: "geschenk", stil: "advent" }
+];
+
 var FAECHER = {
 
   "Mathematik": {
@@ -337,6 +384,7 @@ var QR = (function(){
     spiel:'<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 11v.01M18 13v.01"/>',
     idee:'<path d="M3 12h1M12 3v1M20 12h1M5.6 5.6l.7.7M18.4 5.6l-.7.7"/><path d="M9 16a5 5 0 1 1 6 0 3.5 3.5 0 0 0-1 3 2 2 0 0 1-4 0 3.5 3.5 0 0 0-1-3M9.7 17h4.6"/>',
     stern:'<path d="M12 17.8l-6.2 3.2 1.2-6.9-5-4.9 6.9-1L12 2l3.1 6.2 6.9 1-5 4.9 1.2 6.9z"/>',
+    geschenk:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
     datei:'<path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/>'
   };
   function symbol(name){
@@ -353,6 +401,66 @@ var QR = (function(){
 
   var d = new Date();
   document.getElementById("datum").textContent = ("0"+d.getDate()).slice(-2)+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+d.getFullYear();
+
+  /* Hervorgehobene Kacheln */
+  var oben = document.getElementById("oben");
+  (typeof OBEN!=="undefined" ? OBEN : []).forEach(function(it){
+    var advent = it.stil==="advent";
+    var c = document.createElement("div"); c.className = "hl";
+    c.innerHTML = '<span class="hlicon" aria-hidden="true">'+symbol(it.icon||"stern")+'</span>'+
+      '<span>'+(it.kicker?'<span class="hlkick">'+esc(it.kicker)+'</span>':'')+'<h2>'+esc(it.titel)+'</h2>'+(it.text?'<p>'+esc(it.text)+'</p>':'')+'</span>'+
+      '<span class="aktionen">'+(advent?'':'<button type="button" class="qrbtn" aria-label="QR-Code für '+esc(it.titel)+' zeigen" title="QR-Code zeigen">'+QRICON+'</button>')+
+      '<a class="start" href="'+encodeURI(it.datei)+'">Öffnen <span aria-hidden="true">›</span></a></span>';
+    c.addEventListener("click",function(e){ if(!e.target.closest("a,button")) location.href = encodeURI(it.datei); });
+    var qb = c.querySelector(".qrbtn");
+    if(qb) qb.addEventListener("click",function(){ zeigeQR(it, it.kicker||"", null, qb); });
+    if(advent){
+      var w = document.createElement("div"); w.className = "advent"; w.appendChild(c); oben.appendChild(w);
+      lichterkette(w);
+    } else oben.appendChild(c);
+    if(online){
+      fetch(encodeURI(it.datei),{method:"HEAD",cache:"no-store"}).then(function(r){
+        if(!r.ok){ c.classList.add("fehlt"); c.querySelector(".start").textContent = "Noch nicht online"; }
+      }).catch(function(){});
+    }
+  });
+
+  /* Lichterkette rund um eine Kachel */
+  function lichterkette(w){
+    var NS = "http://www.w3.org/2000/svg", FARBEN = ["#FFC400","#1FB25A","#2E8BFF","#FF4FA3","#FF7A00"];
+    var svg = document.createElementNS(NS,"svg"); svg.setAttribute("class","kette"); svg.setAttribute("aria-hidden","true");
+    w.appendChild(svg);
+    var zuletzt = "";
+    function bau(){
+      var W = w.clientWidth, H = w.clientHeight, key = W+"x"+H;
+      if(!W || key===zuletzt) return; zuletzt = key;
+      var m = 10, r = 34, x0 = m, y0 = m, x1 = W-m, y1 = H-m;
+      var ref = document.createElementNS(NS,"path");
+      ref.setAttribute("d","M"+(x0+r)+","+y0+"H"+(x1-r)+"A"+r+","+r+" 0 0 1 "+x1+","+(y0+r)+"V"+(y1-r)+"A"+r+","+r+" 0 0 1 "+(x1-r)+","+y1+"H"+(x0+r)+"A"+r+","+r+" 0 0 1 "+x0+","+(y1-r)+"V"+(y0+r)+"A"+r+","+r+" 0 0 1 "+(x0+r)+","+y0+"Z");
+      svg.innerHTML = ""; svg.appendChild(ref); ref.setAttribute("fill","none");
+      var L = ref.getTotalLength(), n = Math.max(12, Math.round(L/46)), step = L/n, draht = "", birnen = "";
+      function pt(l){ l = (l%L+L)%L; return ref.getPointAtLength(l); }
+      function normale(l){ var a = pt(l-1), b = pt(l+1), dx = b.x-a.x, dy = b.y-a.y, d = Math.hypot(dx,dy)||1; return {x:dy/d, y:-dx/d}; }
+      /* Draht: leicht durchhängend zwischen den Birnen */
+      for(var k=0;k<=n*8;k++){
+        var l = k*step/8, p = pt(l), nn = normale(l), sag = 4*Math.sin(Math.PI*(k%8)/8);
+        draht += (k?"L":"M")+(p.x-nn.x*sag).toFixed(1)+","+(p.y-nn.y*sag).toFixed(1);
+      }
+      for(var i=0;i<n;i++){
+        var l2 = i*step, q = pt(l2), no = normale(l2), ang = Math.atan2(no.y,no.x)*180/Math.PI+90;
+        var aussen = (i%2===0) ? -1 : 1;  /* abwechselnd nach außen und innen */
+        var f = FARBEN[i%FARBEN.length], g = "g"+(i%3);
+        birnen += '<g transform="translate('+q.x.toFixed(1)+','+q.y.toFixed(1)+') rotate('+(ang+(aussen<0?0:180)).toFixed(1)+')">'+
+          '<rect class="fassung" x="-3" y="-2" width="6" height="7" rx="1.5"/>'+
+          '<g class="an '+g+'"><circle class="glow" cx="0" cy="12" r="10" fill="'+f+'" opacity=".35"/>'+
+          '<ellipse cx="0" cy="12" rx="5" ry="7.5" fill="'+f+'" stroke="rgba(0,0,0,.18)" stroke-width=".8"/>'+
+          '<ellipse cx="-1.6" cy="9.5" rx="1.4" ry="2.4" fill="#fff" opacity=".7"/></g></g>';
+      }
+      svg.innerHTML = '<path class="draht" d="'+draht+'"/>'+birnen;
+    }
+    bau();
+    if(window.ResizeObserver) new ResizeObserver(bau).observe(w); else window.addEventListener("resize",bau);
+  }
 
   Object.keys(FAECHER).forEach(function(fach){
     var klassen = FAECHER[fach], ks = Object.keys(klassen), gesamt = 0;
@@ -434,8 +542,8 @@ var QR = (function(){
   /* QR-Code-Fenster */
   var qm = document.getElementById("qrmodal"), qrVon = null;
   function zeigeQR(it, fach, k, knopf){
-    var url = new URL(it.datei, location.href).href, n = nr(k);
-    document.getElementById("qrkick").textContent = fach+(n?" · Klasse "+n:" · "+k);
+    var url = new URL(it.datei, location.href).href, n = k ? nr(k) : null;
+    document.getElementById("qrkick").textContent = k ? fach+(n?" · Klasse "+n:" · "+k) : fach;
     document.getElementById("qrtitel").textContent = it.titel;
     document.getElementById("qrurl").textContent = url.replace(/^https?:\/\//,"");
     try{
