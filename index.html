@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>Mathematik und Informatik</title>
 <style>
 :root{
@@ -13,6 +14,8 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
+html{background:#FFFFFF;color-scheme:light}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 body{background:var(--weiss);color:var(--text);font-family:var(--font);font-size:18px;line-height:1.45;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1040px;margin:0 auto;padding:56px 28px 72px}
 
@@ -25,8 +28,7 @@ h1{margin:10px 0 40px;font-size:clamp(40px,6.6vw,68px);line-height:1.05;font-wei
 .lead b{color:var(--blau)}
 
 /* Fächer (aufklappbar) */
-.fach{background:var(--hell);border-radius:26px;margin-bottom:18px;transition:box-shadow .3s}
-.fach.offen{box-shadow:0 16px 40px rgba(0,0,0,.07)}
+.fach{background:var(--hell);border-radius:26px;margin-bottom:18px}
 .fkopf{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;border:0;background:none;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;padding:24px 28px;border-radius:26px}
 .fkopf:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
 .ficon{width:68px;height:68px;border-radius:18px;background:var(--weiss);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.06)}
@@ -35,25 +37,22 @@ h1{margin:10px 0 40px;font-size:clamp(40px,6.6vw,68px);line-height:1.05;font-wei
 .finfo{display:block;font-size:16px;color:var(--grau);margin-top:4px}
 .pfeil{width:44px;height:44px;border-radius:50%;background:var(--weiss);display:flex;align-items:center;justify-content:center;transition:transform .35s var(--ease),background .25s}
 .pfeil svg{width:18px;height:18px}
-.fkopf:hover .pfeil{background:var(--hell2)}
-.fach.offen .pfeil{transform:rotate(180deg);background:var(--dunkel)}
+.fach.offen .pfeil{transform:rotate(180deg);background:var(--blau)}
 .fach.offen .pfeil path{stroke:#fff}
-.fbody{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
-.fach.offen .fbody{grid-template-rows:1fr}
-.finner{overflow:hidden}
+.fbody{height:0;overflow:hidden;transition:height .4s var(--ease)}
+.finner{}
 .fpad{padding:0 28px 28px}
 
 /* Klassen */
 .klassen{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .klassen button{font:inherit;cursor:pointer;text-align:left;border:0;border-radius:20px;background:var(--weiss);color:var(--text);padding:16px 18px 14px;min-height:108px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .25s var(--ease),background .25s,color .25s,box-shadow .25s}
-.klassen button:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.07)}
 .klassen button:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
 .klassen .k{font-size:14px;color:var(--grau)}
 .klassen .n{font-size:clamp(28px,3.4vw,38px);font-weight:700;line-height:1;letter-spacing:-.02em}
 .klassen .n.w{font-size:clamp(21px,2.4vw,26px)}
 .klassen .z{font-size:14px;color:var(--grau)}
-.klassen button.on{background:var(--dunkel);color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.18)}
-.klassen button.on .k,.klassen button.on .z{color:#A1A1A6}
+.klassen button.on{background:var(--blau);color:#fff;box-shadow:0 12px 28px rgba(0,113,227,.28)}
+.klassen button.on .k,.klassen button.on .z{color:#CFE3FA}
 
 /* Inhalte */
 .inhalt{margin-top:26px}
@@ -62,21 +61,33 @@ h1{margin:10px 0 40px;font-size:clamp(40px,6.6vw,68px);line-height:1.05;font-wei
 h2{margin:2px 0 0;font-size:clamp(24px,3vw,32px);font-weight:700}
 .anzahl{font-size:15px;color:var(--grau)}
 .list{display:grid;gap:14px}
-.card{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;text-decoration:none;color:inherit;background:var(--weiss);border-radius:22px;padding:22px 24px;transition:transform .25s var(--ease),box-shadow .25s;animation:rein .4s var(--ease) backwards}
-.card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.08)}
-.card:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
-.icon{width:60px;height:60px;border-radius:16px;background:var(--hell);display:flex;align-items:center;justify-content:center;font-size:30px}
+.card{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;color:inherit;background:var(--weiss);border-radius:22px;padding:22px 24px;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s;animation:rein .4s var(--ease) backwards}
+.aktionen{display:flex;gap:10px;align-items:center}
+.qrbtn{flex:none;width:48px;height:48px;border-radius:50%;border:0;background:var(--hell);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:background .2s}
+.qrbtn svg{width:22px;height:22px}
+.qrbtn:focus-visible,.start:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
+.icon{width:60px;height:60px;border-radius:16px;background:var(--hell);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--grau)}
+.icon svg{width:32px;height:32px}
 .card h3{margin:0;font-size:clamp(20px,2.3vw,23px);font-weight:700;line-height:1.25}
 .card p{margin:6px 0 0;font-size:18px;color:var(--grau)}
 .pille{display:inline-block;margin-top:12px;font-size:14px;color:var(--text);background:var(--hell);border-radius:999px;padding:4px 12px}
-.start{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;background:var(--blau);color:#fff;font-weight:700;font-size:18px;border-radius:999px;padding:12px 22px;transition:background .2s}
-.card:hover .start{background:#0077ED}
+.start{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;background:var(--blau);color:#fff;font-weight:700;font-size:18px;border-radius:999px;padding:12px 22px;text-decoration:none;transition:background .2s}
 .card.fehlt{pointer-events:none}
+.card.fehlt .qrbtn{opacity:.4}
 .card.fehlt .start{background:var(--linie);color:var(--grau)}
 .card.fehlt h3,.card.fehlt .icon{opacity:.5}
 .leer{background:var(--weiss);border-radius:22px;padding:40px 24px;text-align:center;color:var(--grau);animation:rein .4s var(--ease) backwards}
 .leer b{display:block;color:var(--text);font-size:21px;margin-bottom:4px}
 @keyframes rein{from{opacity:0;transform:translateY(14px)}}
+/* Hover-Effekte nur mit echter Maus, nicht auf Tablets */
+@media (hover:hover) and (pointer:fine){
+  .fkopf:hover .pfeil{background:var(--hell2)}
+  .fach.offen .fkopf:hover .pfeil{background:#0077ED}
+  .klassen button:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.07)}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.08)}
+  .card:hover .start{background:#0077ED}
+  .qrbtn:hover{background:var(--hell2)}
+}
 
 footer{margin-top:40px;font-size:15px;color:var(--grau)}
 footer code{font-family:var(--code);font-size:15px;color:var(--text);background:var(--hell);border-radius:8px;padding:2px 8px;word-break:break-all}
@@ -91,9 +102,26 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
   .klassen button{min-height:92px}
   .card{grid-template-columns:auto 1fr;gap:14px;padding:18px}
   .icon{width:50px;height:50px;font-size:25px;border-radius:14px}
-  .start{grid-column:1/-1;justify-content:center}
+  .icon svg{width:26px;height:26px}
+  .aktionen{grid-column:1/-1}
+  .start{flex:1}
 }
-@media (prefers-reduced-motion:reduce){ .card,.leer{animation:none} .fbody,.pfeil,.klassen button,.card{transition:none} }
+/* QR-Fenster */
+.qrmodal{position:fixed;inset:0;z-index:100;background:rgba(29,29,31,.45);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+.qrmodal.auf{opacity:1;visibility:visible}
+.qrbox{background:var(--weiss);border-radius:28px;padding:26px 28px 24px;width:100%;max-width:min(94vw,640px);max-height:96vh;overflow:auto;text-align:center;transform:scale(.96);transition:transform .3s var(--ease)}
+.qrmodal.auf .qrbox{transform:none}
+.qrkick{font-size:15px;color:var(--grau)}
+.qrtitel{margin:4px 0 0;font-size:clamp(22px,3vw,30px);font-weight:700}
+.qrbild{width:min(60vh,78vw,460px);margin:16px auto 10px}
+.qrbild svg{display:block;width:100%;height:auto}
+.qrurl{font-family:var(--code);font-size:15px;color:var(--grau);word-break:break-all;margin:0 0 18px}
+.qrknoepfe{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.qrknoepfe a,.qrknoepfe button{font:inherit;font-size:18px;font-weight:700;border:0;border-radius:999px;padding:12px 24px;cursor:pointer;text-decoration:none}
+.qrknoepfe .zweit{background:var(--hell);color:var(--text)}
+.qrknoepfe .haupt{background:var(--blau);color:#fff}
+.qrknoepfe a:focus-visible,.qrknoepfe button:focus-visible{outline:3px solid var(--blau);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){ .card,.leer{animation:none} .fbody,.pfeil,.klassen button,.card,.qrmodal,.qrbox{transition:none!important} }
 </style>
 </head>
 <body>
@@ -108,13 +136,30 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
 
 </div>
 
+<div class="qrmodal" id="qrmodal" aria-hidden="true">
+  <div class="qrbox" role="dialog" aria-modal="true" aria-labelledby="qrtitel">
+    <div class="qrkick" id="qrkick"></div>
+    <h2 class="qrtitel" id="qrtitel"></h2>
+    <div class="qrbild" id="qrbild"></div>
+    <p class="qrurl" id="qrurl"></p>
+    <div class="qrknoepfe">
+      <a class="zweit" id="qrsave" href="#" download="qr-code.png">Bild speichern</a>
+      <button type="button" class="haupt" id="qrzu">Schließen</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* =====================================================================
    HIER DIE INHALTE EINTRAGEN
    ---------------------------------------------------------------------
    Aufbau:  "Fach": { "Klasse": [ Einträge ] }
    Ein Eintrag sieht so aus:
-     { titel: "…", text: "…", datei: "dateiname.html", icon: "🔐", thema: "…" }
+     { titel: "…", text: "…", datei: "dateiname.html", icon: "schloss", thema: "…" }
+   - icon: eines dieser Symbole (Name in Anführungszeichen):
+       schach, schloss, binaer, code, computer, chip, wlan, schild,
+       rechnen, teilen, geometrie, diagramm, buch, spiel, idee, stern, datei
+     (ein Emoji wie "🎲" geht weiterhin auch)
    - datei: genau so geschrieben wie auf GitHub (Groß-/Kleinschreibung!)
    - icon und thema dürfen auch weggelassen werden
    - mehrere Einträge mit Komma trennen
@@ -124,10 +169,10 @@ footer code{font-family:var(--code);font-size:15px;color:var(--text);background:
 var FAECHER = {
 
   "Mathematik": {
-        "Klasse 5": [
+    "Klasse 5": [
       { titel: "Sissa und das Schachbrett",
         text:  "Die Legende vom Reiskorn-Wunsch: Immer wieder verdoppeln und dabei Potenzen entdecken.",
-        datei: "sissa_schachbrett_potenzen.html", icon: "🍚", thema: "Potenzen" }
+        datei: "sissa_schachbrett_potenzen.html", icon: "schach", thema: "Potenzen" }
     ],
     "Sonstiges": []
   },
@@ -140,7 +185,7 @@ var FAECHER = {
     "Sonstiges": [
       { titel: "Operation Tresor – Junior",
         text:  "Die Hacker-Mission für Grundschüler: Lampen-Code, Geheimbild aus 0 und 1 und Dr. Nulls Tresor.",
-        datei: "operation-tresor-junior.html", icon: "🕵️", thema: "Tag der offenen Tür" }
+        datei: "operation-tresor-junior.html", icon: "schloss", thema: "Tag der offenen Tür" }
     ]
   }
 
@@ -151,7 +196,7 @@ var FAECHER = {
     "Klasse 7": [
       { titel: "Operation Tresor – Binär-Hack",
         text:  "Binärzahlen umrechnen, Bits und Bytes.",
-        datei: "operation-tresor-binaer-hack_2.1.html", icon: "🔐", thema: "Zahlensysteme" },
+        datei: "operation-tresor-binaer-hack_2.1.html", icon: "binaer", thema: "Zahlensysteme" },
       { titel: "Zweites Spiel",
         text:  "Kurze Beschreibung.",
         datei: "zweites-spiel.html" }
@@ -159,12 +204,145 @@ var FAECHER = {
 */
 /* ===================================================================== */
 
+/* ===== QR-Code-Erzeuger (Byte-Modus, Fehlerkorrektur M, Version 1–15), ohne externe Bibliothek ===== */
+var QR = (function(){
+  var EC = [null,
+    [10,[[1,16]]],[16,[[1,28]]],[26,[[1,44]]],[18,[[2,32]]],[24,[[2,43]]],
+    [16,[[4,27]]],[18,[[4,31]]],[22,[[2,38],[2,39]]],[22,[[3,36],[2,37]]],[26,[[4,43],[1,44]]],
+    [30,[[1,50],[4,51]]],[22,[[6,36],[2,37]]],[22,[[8,37],[1,38]]],[24,[[4,40],[5,41]]],[24,[[5,41],[5,42]]]];
+  var ALIGN = [null,[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70]];
+  function mul(x,y){ var z = 0; for(var i=7;i>=0;i--){ z = (z<<1)^((z>>>7)*0x11D); z ^= ((y>>>i)&1)*x; } return z & 255; }
+  function divisor(deg){ var r = []; for(var i=0;i<deg-1;i++) r.push(0); r.push(1); var root = 1;
+    for(i=0;i<deg;i++){ for(var j=0;j<r.length;j++){ r[j] = mul(r[j],root); if(j+1<r.length) r[j] ^= r[j+1]; } root = mul(root,2); } return r; }
+  function remainder(data,div){ var r = div.map(function(){ return 0; });
+    data.forEach(function(b){ var f = b ^ r.shift(); r.push(0); for(var i=0;i<r.length;i++) r[i] ^= mul(div[i],f); }); return r; }
+  function utf8(s){ var out = [], e = unescape(encodeURIComponent(s)); for(var i=0;i<e.length;i++) out.push(e.charCodeAt(i)); return out; }
+
+  function make(text){
+    var bytes = utf8(text), ver, info, dataLen;
+    for(ver=1;ver<=15;ver++){
+      info = EC[ver]; dataLen = 0; info[1].forEach(function(g){ dataLen += g[0]*g[1]; });
+      if(4+(ver<10?8:16)+bytes.length*8 <= dataLen*8) break;
+    }
+    if(ver>15) throw new Error("Text zu lang für den QR-Code");
+    /* Bitfolge */
+    var bits = [];
+    function put(v,n){ for(var i=n-1;i>=0;i--) bits.push((v>>>i)&1); }
+    put(4,4); put(bytes.length, ver<10?8:16); bytes.forEach(function(b){ put(b,8); });
+    put(0, Math.min(4, dataLen*8-bits.length));
+    while(bits.length%8) bits.push(0);
+    var cw = []; for(var i=0;i<bits.length;i+=8){ var v = 0; for(var k=0;k<8;k++) v = (v<<1)|bits[i+k]; cw.push(v); }
+    for(var p=0; cw.length<dataLen; p++) cw.push(p%2 ? 0x11 : 0xEC);
+    /* Blöcke + Fehlerkorrektur */
+    var ecLen = info[0], div = divisor(ecLen), blocks = [], pos = 0;
+    info[1].forEach(function(g){ for(var n=0;n<g[0];n++){ var d = cw.slice(pos,pos+g[1]); pos += g[1]; blocks.push({d:d, e:remainder(d,div)}); } });
+    var all = [], maxD = Math.max.apply(null, blocks.map(function(b){ return b.d.length; }));
+    for(i=0;i<maxD;i++) blocks.forEach(function(b){ if(i<b.d.length) all.push(b.d[i]); });
+    for(i=0;i<ecLen;i++) blocks.forEach(function(b){ all.push(b.e[i]); });
+    /* Matrix */
+    var size = ver*4+17, M = [], F = [];
+    for(i=0;i<size;i++){ M.push(new Array(size).fill(false)); F.push(new Array(size).fill(false)); }
+    function set(x,y,dark){ M[y][x] = dark; F[y][x] = true; }
+    for(i=0;i<size;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+    [[3,3],[size-4,3],[3,size-4]].forEach(function(c){
+      for(var dy=-4;dy<=4;dy++) for(var dx=-4;dx<=4;dx++){ var d = Math.max(Math.abs(dx),Math.abs(dy)), xx = c[0]+dx, yy = c[1]+dy;
+        if(xx>=0&&xx<size&&yy>=0&&yy<size) set(xx,yy,d!==2&&d!==4); } });
+    var al = ALIGN[ver], na = al.length;
+    for(i=0;i<na;i++) for(var j=0;j<na;j++){
+      if((i===0&&j===0)||(i===0&&j===na-1)||(i===na-1&&j===0)) continue;
+      for(var dy2=-2;dy2<=2;dy2++) for(var dx2=-2;dx2<=2;dx2++) set(al[i]+dx2, al[j]+dy2, Math.max(Math.abs(dx2),Math.abs(dy2))!==1);
+    }
+    function format(mask){
+      var data = (0<<3)|mask, rem = data;            /* Fehlerkorrektur M = 00 */
+      for(var q=0;q<10;q++) rem = (rem<<1)^((rem>>>9)*0x537);
+      var b = ((data<<10)|rem)^0x5412, g = function(n){ return ((b>>>n)&1)!==0; };
+      for(var q2=0;q2<=5;q2++) set(8,q2,g(q2));
+      set(8,7,g(6)); set(8,8,g(7)); set(7,8,g(8));
+      for(q2=9;q2<15;q2++) set(14-q2,8,g(q2));
+      for(q2=0;q2<8;q2++) set(size-1-q2,8,g(q2));
+      for(q2=8;q2<15;q2++) set(8,size-15+q2,g(q2));
+      set(8,size-8,true);
+    }
+    format(0);
+    if(ver>=7){
+      var rem2 = ver; for(i=0;i<12;i++) rem2 = (rem2<<1)^((rem2>>>11)*0x1F25);
+      var vb = (ver<<12)|rem2;
+      for(i=0;i<18;i++){ var bit = ((vb>>>i)&1)!==0, a = size-11+i%3, b2 = Math.floor(i/3); set(a,b2,bit); set(b2,a,bit); }
+    }
+    /* Daten im Zickzack */
+    var idx = 0;
+    for(var right=size-1; right>=1; right-=2){
+      if(right===6) right = 5;
+      for(var vert=0; vert<size; vert++) for(var jj=0; jj<2; jj++){
+        var x = right-jj, up = ((right+1)&2)===0, y = up ? size-1-vert : vert;
+        if(!F[y][x] && idx<all.length*8){ M[y][x] = ((all[idx>>>3]>>>(7-(idx&7)))&1)!==0; idx++; }
+      }
+    }
+    /* beste Maske wählen */
+    var MASKS = [
+      function(x,y){ return (x+y)%2===0; }, function(x,y){ return y%2===0; }, function(x){ return x%3===0; },
+      function(x,y){ return (x+y)%3===0; }, function(x,y){ return (Math.floor(x/3)+Math.floor(y/2))%2===0; },
+      function(x,y){ return x*y%2+x*y%3===0; }, function(x,y){ return (x*y%2+x*y%3)%2===0; },
+      function(x,y){ return ((x+y)%2+x*y%3)%2===0; } ];
+    function apply(m){ for(var y=0;y<size;y++) for(var x=0;x<size;x++) if(!F[y][x] && MASKS[m](x,y)) M[y][x] = !M[y][x]; }
+    function penalty(){
+      var s = 0, dark = 0, y, x, run, c;
+      for(y=0;y<size;y++){ run = 1; for(x=1;x<size;x++){ if(M[y][x]===M[y][x-1]){ run++; if(run===5) s += 3; else if(run>5) s++; } else run = 1; } }
+      for(x=0;x<size;x++){ run = 1; for(y=1;y<size;y++){ if(M[y][x]===M[y-1][x]){ run++; if(run===5) s += 3; else if(run>5) s++; } else run = 1; } }
+      for(y=0;y<size-1;y++) for(x=0;x<size-1;x++){ c = M[y][x]; if(c===M[y][x+1]&&c===M[y+1][x]&&c===M[y+1][x+1]) s += 3; }
+      for(y=0;y<size;y++) for(x=0;x<size;x++) if(M[y][x]) dark++;
+      return s + Math.floor(Math.abs(dark*20-size*size*10)/(size*size))*10;
+    }
+    var best = 0, bestP = Infinity;
+    for(var m=0;m<8;m++){ apply(m); format(m); var pe = penalty(); if(pe<bestP){ bestP = pe; best = m; } apply(m); }
+    apply(best); format(best);
+    return M;
+  }
+  function svg(text, rand){
+    var M = make(text), n = M.length, q = rand==null ? 4 : rand, d = "";
+    for(var y=0;y<n;y++) for(var x=0;x<n;x++) if(M[y][x]) d += "M"+(x+q)+","+(y+q)+"h1v1h-1z";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+(n+2*q)+' '+(n+2*q)+'" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="'+d+'" fill="#1D1D1F"/></svg>';
+  }
+  function png(text, px){
+    var M = make(text), n = M.length, q = 4, s = Math.max(1, Math.floor((px||1024)/(n+2*q)));
+    var c = document.createElement("canvas"); c.width = c.height = (n+2*q)*s;
+    var g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height); g.fillStyle = "#1D1D1F";
+    for(var y=0;y<n;y++) for(var x=0;x<n;x++) if(M[y][x]) g.fillRect((x+q)*s,(y+q)*s,s,s);
+    return c.toDataURL("image/png");
+  }
+  return {make:make, svg:svg, png:png};
+})();
+
 (function(){
   "use strict";
   var ICONS = {
     "Mathematik": '<svg viewBox="0 0 36 36" fill="none" stroke="#1D1D1F" stroke-width="2.6" stroke-linecap="round"><path d="M9 6v10M4 11h10"/><path d="M22 11h10"/><path d="M5 24l8 8M13 24l-8 8"/><path d="M22 26h10M22 31h10"/></svg>',
     "Informatik": '<svg viewBox="0 0 36 36" fill="none" stroke="#1D1D1F" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="28" height="19" rx="3"/><path d="M13 31h10M18 25v6"/><path d="M12 13l-3 3 3 3M24 13l3 3-3 3M20 12l-4 8"/></svg>'
   };
+  var QRICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M7 7v.01M17 7v.01M7 17v.01M14 14h3M20 14v.01M14 14v3M14 20h3M17 17h3M20 17v3"/></svg>';
+  var SYMBOLE = {
+    schach:'<path d="M12 3a3 3 0 0 1 3 3c0 1.1-.6 2.5-1.5 3l1.5 7H9l1.5-7C9.6 8.5 9 7.1 9 6a3 3 0 0 1 3-3z"/><path d="M8 9h8"/><path d="M6.7 16.8a1 1 0 0 0-.7.9V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-1.3a1 1 0 0 0-.7-.9L15 16H9z"/>',
+    schloss:'<rect x="5" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1"/><path d="M8 11V7a4 4 0 1 1 8 0v4"/>',
+    binaer:'<path d="M11 10V5h-1M18 19v-5h-1"/><rect x="15" y="5" width="3" height="5" rx=".5"/><rect x="10" y="14" width="3" height="5" rx=".5"/><path d="M6 10h.01M6 19h.01"/>',
+    code:'<path d="M7 8l-4 4 4 4M17 8l4 4-4 4M14 4l-4 16"/>',
+    computer:'<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M7 20h10M9 16v4M15 16v4"/>',
+    chip:'<rect x="5" y="5" width="14" height="14" rx="1"/><path d="M9 9h6v6H9z"/><path d="M3 10h2M3 14h2M10 3v2M14 3v2M21 10h-2M21 14h-2M14 21v-2M10 21v-2"/>',
+    wlan:'<path d="M12 18h.01"/><path d="M9.2 15.2a4 4 0 0 1 5.6 0"/><path d="M6.3 12.3a8 8 0 0 1 11.4 0"/><path d="M3.5 9.5a12 12 0 0 1 17 0"/>',
+    schild:'<path d="M12 3a12 12 0 0 0 8.5 3A12 12 0 0 1 12 21 12 12 0 0 1 3.5 6 12 12 0 0 0 12 3"/>',
+    rechnen:'<rect x="4" y="3" width="16" height="18" rx="2"/><rect x="8" y="7" width="8" height="3" rx="1"/><path d="M8 14v.01M12 14v.01M16 14v.01M8 17v.01M12 17v.01M16 17v.01"/>',
+    teilen:'<path d="M5 12h14"/><circle cx="12" cy="6" r="1.2"/><circle cx="12" cy="18" r="1.2"/>',
+    geometrie:'<path d="M4 20h16L4 4z"/><path d="M4 14h4v6"/>',
+    diagramm:'<path d="M3 3v18h18"/><path d="M7 16v-3M11 16V9M15 16v-5M19 16V6"/>',
+    buch:'<path d="M3 19a9 9 0 0 1 9 0 9 9 0 0 1 9 0M3 6a9 9 0 0 1 9 0 9 9 0 0 1 9 0M3 6v13M12 6v13M21 6v13"/>',
+    spiel:'<rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4M15 11v.01M18 13v.01"/>',
+    idee:'<path d="M3 12h1M12 3v1M20 12h1M5.6 5.6l.7.7M18.4 5.6l-.7.7"/><path d="M9 16a5 5 0 1 1 6 0 3.5 3.5 0 0 0-1 3 2 2 0 0 1-4 0 3.5 3.5 0 0 0-1-3M9.7 17h4.6"/>',
+    stern:'<path d="M12 17.8l-6.2 3.2 1.2-6.9-5-4.9 6.9-1L12 2l3.1 6.2 6.9 1-5 4.9 1.2 6.9z"/>',
+    datei:'<path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/>'
+  };
+  function symbol(name){
+    var p = SYMBOLE[name||"datei"];
+    return p ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>' : esc(name);
+  }
   var PFEIL = '<svg viewBox="0 0 18 18" fill="none"><path d="M4 7l5 5 5-5" stroke="#1D1D1F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var online = /^https?:/.test(location.protocol), box = document.getElementById("faecher"), F = {};
 
@@ -203,10 +381,23 @@ var FAECHER = {
     F[fach] = el;
   });
 
+  /* weiches Auf- und Zuklappen über die Höhe (läuft auch auf Tablets ruckelfrei) */
+  function setHoehe(el, auf){
+    var b = el.querySelector(".fbody");
+    if(b._t){ clearTimeout(b._t); b._t = null; }
+    if(auf){
+      b.style.height = b.scrollHeight+"px";
+      b._t = setTimeout(function(){ if(el.classList.contains("offen")) b.style.height = "auto"; }, 420);
+    } else {
+      if(b.style.height==="auto" || b.style.height===""){ b.style.height = b.scrollHeight+"px"; void b.offsetHeight; }
+      b.style.height = "0px";
+    }
+  }
   function klappe(fach, auf, merken){
     Object.keys(F).forEach(function(f){
-      var o = (f===fach) && auf;
+      var o = (f===fach) && auf, war = F[f].classList.contains("offen");
       F[f].classList.toggle("offen",o); F[f].querySelector(".fkopf").setAttribute("aria-expanded",o);
+      if(o!==war) setHoehe(F[f],o);
     });
     if(merken && history.replaceState) history.replaceState(null,"", auf ? "#"+slug(fach) : location.pathname);
   }
@@ -219,19 +410,51 @@ var FAECHER = {
             '<span class="anzahl">'+(items.length?zahl(items.length):"")+'</span></div><div class="list">';
     if(!items.length) h += '<div class="leer"><b>Hier kommt bald etwas.</b>Schau später noch einmal vorbei.</div>';
     items.forEach(function(it,i){
-      h += '<a class="card" style="animation-delay:'+(i*.07)+'s" href="'+encodeURI(it.datei)+'">'+
-           '<span class="icon" aria-hidden="true">'+(it.icon||"📄")+'</span>'+
+      h += '<div class="card" style="animation-delay:'+(i*.07)+'s" data-href="'+encodeURI(it.datei)+'">'+
+           '<span class="icon" aria-hidden="true">'+symbol(it.icon)+'</span>'+
            '<span><h3>'+esc(it.titel)+'</h3>'+(it.text?'<p>'+esc(it.text)+'</p>':'')+(it.thema?'<span class="pille">'+esc(it.thema)+'</span>':'')+'</span>'+
-           '<span class="start">Starten <span aria-hidden="true">›</span></span></a>';
+           '<span class="aktionen"><button type="button" class="qrbtn" data-i="'+i+'" aria-label="QR-Code für '+esc(it.titel)+' zeigen" title="QR-Code zeigen">'+QRICON+'</button>'+
+           '<a class="start" href="'+encodeURI(it.datei)+'">Starten <span aria-hidden="true">›</span></a></span></div>';
     });
     el.querySelector(".inhalt").innerHTML = h+'</div>';
+    Array.prototype.forEach.call(el.querySelectorAll(".card"),function(c){
+      c.addEventListener("click",function(e){ if(!e.target.closest("a,button")) location.href = c.getAttribute("data-href"); });
+    });
+    Array.prototype.forEach.call(el.querySelectorAll(".qrbtn"),function(b){
+      b.addEventListener("click",function(){ zeigeQR(items[+b.getAttribute("data-i")], fach, k, b); });
+    });
     if(merken && history.replaceState) history.replaceState(null,"","#"+slug(fach)+"-"+slug(k));
     if(online) Array.prototype.forEach.call(el.querySelectorAll(".card"),function(c){
-      fetch(c.getAttribute("href"),{method:"HEAD",cache:"no-store"}).then(function(r){
+      fetch(c.getAttribute("data-href"),{method:"HEAD",cache:"no-store"}).then(function(r){
         if(!r.ok){ c.classList.add("fehlt"); c.querySelector(".start").textContent = "Noch nicht online"; }
       }).catch(function(){});
     });
   }
+
+  /* QR-Code-Fenster */
+  var qm = document.getElementById("qrmodal"), qrVon = null;
+  function zeigeQR(it, fach, k, knopf){
+    var url = new URL(it.datei, location.href).href, n = nr(k);
+    document.getElementById("qrkick").textContent = fach+(n?" · Klasse "+n:" · "+k);
+    document.getElementById("qrtitel").textContent = it.titel;
+    document.getElementById("qrurl").textContent = url.replace(/^https?:\/\//,"");
+    try{
+      document.getElementById("qrbild").innerHTML = QR.svg(url);
+      var a = document.getElementById("qrsave");
+      a.href = QR.png(url,1200); a.setAttribute("download","qr-"+it.datei.replace(/\.html?$/i,"").replace(/[^\w-]+/g,"-")+".png");
+    }catch(err){ document.getElementById("qrbild").innerHTML = '<p class="qrurl">Die Adresse ist zu lang für einen QR-Code.</p>'; }
+    qrVon = knopf || null;
+    qm.classList.add("auf"); qm.setAttribute("aria-hidden","false");
+    setTimeout(function(){ document.getElementById("qrzu").focus(); },50);
+  }
+  function schliesseQR(){
+    if(!qm.classList.contains("auf")) return;
+    qm.classList.remove("auf"); qm.setAttribute("aria-hidden","true");
+    if(qrVon) qrVon.focus();
+  }
+  document.getElementById("qrzu").addEventListener("click",schliesseQR);
+  qm.addEventListener("click",function(e){ if(e.target===qm) schliesseQR(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape") schliesseQR(); });
 
   /* Direktadressen wie #informatik-klasse7, #mathe-klasse5 oder #informatik */
   function ausAdresse(){
